@@ -1,85 +1,39 @@
 # ACL 모두 허용
 locals {
   public_subnet_ingress = [
-     ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"],   
-   ]
+    ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"],
+  ]
 
-   private_subnet_ingress = [
-     ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"],
-   ]
+  private_subnet_ingress = [
+    ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"],
+  ]
 
-   public_subnet_egress = [
-     ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"]
-   ]
+  public_subnet_egress = [
+    ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"]
+  ]
 
-   private_subnet_egress = [
-     ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"]
-   ]
+  private_subnet_egress = [
+    ["100", "-1", "0.0.0.0/0", "0", "0", "ALLOW"]
+  ]
 }
 
-resource "aws_network_acl" "sol_acl_public" {
-  vpc_id     = aws_vpc.sol_vpc.id
-  subnet_ids = [aws_subnet.sol_subnet_public.id]
-
-  dynamic "ingress" {
-    for_each = local.public_subnet_ingress
-    content {
-      rule_no    = tonumber(ingress.value[0])
-      protocol   = ingress.value[1]
-      cidr_block = ingress.value[2]
-      from_port  = ingress.value[3]
-      to_port    = ingress.value[4]
-      action     = ingress.value[5]
-    }
-  }
-
-  dynamic "egress" {
-    for_each = local.public_subnet_egress
-    content {
-      rule_no    = tonumber(egress.value[0])
-      protocol   = egress.value[1]
-      cidr_block = egress.value[2]
-      from_port  = egress.value[3]
-      to_port    = egress.value[4]
-      action     = egress.value[5]
-    }
-  }
-
-  tags = {
-    Name = join("-", ["${var.vpc_name}","public","acl"])
-  }
+module "sol_public_acl" {
+  source       = "./modules/acl"
+  count        = length(var.zone)
+  acl_name     = join("-", ["${var.vpc_name}", "public", count.index, "acl"])
+  vpc_id       = module.sol_vpc.vpc_info.id
+  subnet_ids   = [module.sol_subnet_public[count.index].subnet_info.id]
+  ingress_list = local.public_subnet_ingress
+  egress_list  = local.public_subnet_egress
 }
 
-
-resource "aws_network_acl" "sol_acl_public" {
-  vpc_id     = aws_vpc.sol_vpc.id
-  subnet_ids = [aws_subnet.sol_subnet_private.id]
-
-  dynamic "ingress" {
-    for_each = local.private_subnet_ingress
-    content {
-      rule_no    = tonumber(ingress.value[0])
-      protocol   = ingress.value[1]
-      cidr_block = ingress.value[2]
-      from_port  = ingress.value[3]
-      to_port    = ingress.value[4]
-      action     = ingress.value[5]
-    }
-  }
-
-  dynamic "egress" {
-    for_each = local.private_subnet_egress
-    content {
-      rule_no    = tonumber(egress.value[0])
-      protocol   = egress.value[1]
-      cidr_block = egress.value[2]
-      from_port  = egress.value[3]
-      to_port    = egress.value[4]
-      action     = egress.value[5]
-    }
-  }
-
-  tags = {
-    Name = join("-", ["${var.vpc_name}","private","acl"])
-  }
+module "sol_private_acl" {
+  source       = "./modules/acl"
+  count        = length(var.zone)
+  acl_name     = join("-", ["${var.vpc_name}", "private", count.index, "acl"])
+  vpc_id       = module.sol_vpc.vpc_info.id
+  subnet_ids   = [module.sol_subnet_private[count.index].subnet_info.id]
+  ingress_list = local.private_subnet_ingress
+  egress_list  = local.private_subnet_egress
 }
+

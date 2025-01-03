@@ -1,3 +1,4 @@
+# VPC
 variable "vpc_cidr" {
   description = "vpc cidr"
   type        = string
@@ -14,9 +15,9 @@ variable "region" {
   type        = string
 }
 
+# subnet
 variable "zone" {
   description = "availability_zone"
-    default     = "ap-northeast-2a" # 서울
   type        = list(string)
 }
 
@@ -29,4 +30,22 @@ variable "subnet_private_cidr" {
   description = "private subnet cidr"
   type        = list(string)
 }
+
+# EC2
+
+variable "master_count" {
+  description = "master count"
+  type        = number
+}
+
+variable "worker_count" {
+  description = "worker count"
+  type        = number
+}
+
+variable "infra_count" {
+  description = "infra count"
+  type        = number
+}
+
 

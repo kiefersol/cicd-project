@@ -1,26 +1,31 @@
-# public subnet
-resource "aws_subnet" "sol_subnet_public" {
-  vpc_id                  = aws_vpc.sol_vpc.id
-  cidr_block              = var.subnet_public_cidr
-  availability_zone       = var.zone
-  map_public_ip_on_launch = "true"  # public subnet
-  tags = tomap({
-      "Name" = join("-", ["${var.vpc_name}", lower("${var.zone[count.index]}"), "public","subnet" ]),
-      "kubernetes.io/cluster/${var.vpc_name}" = "owned"
-  })
+# public subnet - bastion ec2, lb 사용 서브넷
+module "sol_subnet_public" {
+  source                  = "./modules/subnet"
+  count                   = length(var.zone)
+  vpc_id                  = module.sol_vpc.vpc_info.id
+  cidr_block              = var.subnet_public_cidr[count.index]
+  availability_zone       = var.zone[count.index]
+  map_public_ip_on_launch = "true" # public subnet
+  subnet_name             = join("-", ["${var.vpc_name}", lower("${var.zone[count.index]}"), "public", "subnet"])
+  vpc_name                = var.vpc_name
 }
 
-# private subnet
-resource "aws_subnet" "sol_subnet_private" {
-  vpc_id                  = aws_vpc.sol_vpc.id
-  cidr_block              = var.subnet_private_cidr
-  availability_zone       = var.zone
-  map_public_ip_on_launch = false    # private subnet
-  tags = tomap({
-      "Name" = join("-", ["${var.vpc_name}",lower("${var.zone[count.index]}"), "private","subnet" ])
-      "kubernetes.io/cluster/${var.vpc_name}" = "owned"
-  })
+# private subnet - infra, kubernetes (master, worker) ec2 사용 서브넷
+module "sol_subnet_private" {
+  source                  = "./modules/subnet"
+  count                   = length(var.zone)
+  vpc_id                  = module.sol_vpc.vpc_info.id
+  cidr_block              = var.subnet_private_cidr[count.index]
+  availability_zone       = var.zone[count.index]
+  map_public_ip_on_launch = false # private subnet
+  subnet_name             = join("-", ["${var.vpc_name}", lower("${var.zone[count.index]}"), "private", "subnet"])
+  vpc_name                = var.vpc_name
 }
+
+
+
+
+
 
 
 
