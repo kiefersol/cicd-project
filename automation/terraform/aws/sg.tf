@@ -45,7 +45,7 @@ module "sol_k8s_lb_sg" {
   source       = "./modules/sg"
   count        = var.master_count > 1 ? 1 : 0
   sg_name      = join("-", ["${var.vpc_name}", "k8s-lb", "sg"])
-  description      = "Security Group For k8s lb"
+  description  = "Security Group For k8s lb"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.jumpbox_sg_rules_ingress, local.nat_ip_sg_rules_ingress, local.ansible_ip_rules_ingress)
   egress_list  = local.default_sg_rules_egress
@@ -56,7 +56,7 @@ module "sol_infra_lb_sg" {
   source       = "./modules/sg"
   count        = var.infra_count > 1 ? 1 : 0
   sg_name      = join("-", ["${var.vpc_name}", "infra-lb", "sg"])
-  description      = "Security Group For infra lb"
+  description  = "Security Group For infra lb"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.jumpbox_sg_rules_ingress, local.nat_ip_sg_rules_ingress, local.ansible_ip_rules_ingress)
   egress_list  = local.default_sg_rules_egress
@@ -66,7 +66,7 @@ module "sol_infra_lb_sg" {
 module "sol_nas_sg" {
   source       = "./modules/sg"
   sg_name      = join("-", ["${var.vpc_name}", "nas", "sg"])
-  description      = "Security Group for NAS"
+  description  = "Security Group for NAS"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = local.private_subnet_cidr_ingress
   egress_list  = local.default_sg_rules_egress
@@ -76,7 +76,7 @@ module "sol_nas_sg" {
 module "sol_jumpbox_sg" {
   source       = "./modules/sg"
   sg_name      = join("-", ["${var.vpc_name}", "jumpbox", "sg"])
-  description      = "Security Group For Jumpbox"
+  description  = "Security Group For Jumpbox"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.jumpbox_sg_rules_ingress, local.nat_ip_sg_rules_ingress, local.ansible_ip_rules_ingress)
   egress_list  = local.default_sg_rules_egress
@@ -87,7 +87,7 @@ module "sol_infra_sg" {
   source       = "./modules/sg"
   count        = var.infra_count > 1 ? 1 : 0
   sg_name      = join("-", ["${var.vpc_name}", "infra", "sg"])
-  description      = "Security Group For Infra Node"
+  description  = "Security Group For Infra Node"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.infra_lb_subnet_cidr_ingress, local.private_subnet_cidr_ingress, local.public_subnet_cidr_ingress, local.nat_ip_sg_rules_ingress, local.jumpbox_sg_rules_ingress, local.ansible_ip_rules_ingress)
   egress_list  = local.default_sg_rules_egress
@@ -98,7 +98,7 @@ module "sol_master_sg" {
   source       = "./modules/sg"
   count        = var.master_count > 1 ? 1 : 0
   sg_name      = join("-", ["${var.vpc_name}", "master", "sg"])
-  description      = "Security Group For Master Node"
+  description  = "Security Group For Master Node"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.k8s_lb_subnet_cidr_ingress, local.private_subnet_cidr_ingress, local.public_subnet_cidr_ingress, local.nat_ip_sg_rules_ingress, local.ansible_ip_rules_ingress, local.jumpbox_sg_rules_ingress)
   egress_list  = local.default_sg_rules_egress
@@ -109,7 +109,7 @@ module "sol_worker_sg" {
   source       = "./modules/sg"
   count        = var.worker_count > 1 ? 1 : 0
   sg_name      = join("-", ["${var.vpc_name}", "worker", "sg"])
-  description      = "Security Group For Worker Node"
+  description  = "Security Group For Worker Node"
   vpc_id       = module.sol_vpc.vpc_info.id
   ingress_list = concat(local.k8s_lb_subnet_cidr_ingress, local.private_subnet_cidr_ingress, local.public_subnet_cidr_ingress, local.nat_ip_sg_rules_ingress, local.jumpbox_sg_rules_ingress, local.ansible_ip_rules_ingress)
   egress_list  = local.default_sg_rules_egress
