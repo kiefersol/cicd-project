@@ -5,3 +5,12 @@ module "sol_vpc" {
   vpc_name = var.vpc_name
   vpc_cidr = var.vpc_cidr
 }
+
+data "aws_vpc" "vpc_info" {
+  tags = {
+    Name = var.vpc_name
+  }
+  depends_on = [
+    module.sol_vpc
+  ]
+}

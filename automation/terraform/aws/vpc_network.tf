@@ -14,3 +14,13 @@ module "sol_internet_gateway" {
   internet_gateway_name = join("-", ["${var.vpc_name}", "internet_gw"])
   vpc_info = module.sol_vpc
 }
+
+data "aws_internet_gateway" "internet_gateway_info" {
+  filter {
+    name = "attachment.vpc-id"
+    values = [data.aws_vpc.vpc_info.id]
+  }
+  depends_on = [
+    module.sol_internet_gateway
+  ]
+}

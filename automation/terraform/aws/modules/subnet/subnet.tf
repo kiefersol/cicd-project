@@ -5,6 +5,6 @@ resource "aws_subnet" "sol_subnet" {
   map_public_ip_on_launch = var.map_public_ip_on_launch
   tags = tomap({
     "Name"                                  = var.subnet_name,
-    "kubernetes.io/cluster/${var.vpc_name}" = "owned"
+    "kubernetes.io/cluster/${var.vpc_name}-${var.system_type}" = "owned"
   })
 }
