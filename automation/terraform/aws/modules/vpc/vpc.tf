@@ -5,7 +5,7 @@ resource "aws_vpc" "sol_vpc" {
   assign_generated_ipv6_cidr_block = false
 
   # vpc 내에서 dns 사용 여부
-  enable_dns_support = true
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
   # 네트워크 관련 주소 사용 메트릭 기능을 활성화하기 위한 속성

@@ -1,8 +1,8 @@
 # VPC
 vpc_install = true
-vpc_name = "cicd"
-vpc_cidr = "10.0.0.0/16"
-region   = "ap-northeast-2"
+vpc_name    = "cicd"
+vpc_cidr    = "10.0.0.0/16"
+region      = "ap-northeast-2"
 
 # Subnet
 system_type         = "dev"
