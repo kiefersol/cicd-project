@@ -19,7 +19,7 @@ locals {
 
 module "sol_public_acl" {
   source       = "./modules/acl"
-  count        = 1
+  count        = length(var.zone)
   acl_name     = join("-", ["${var.vpc_name}", "${var.system_type}", "public", count.index, "acl"])
   vpc_id       = data.aws_vpc.vpc_info.id
   subnet_ids   = [module.sol_subnet_public[count.index].subnet_info.id]

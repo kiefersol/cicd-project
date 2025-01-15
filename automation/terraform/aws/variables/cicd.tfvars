@@ -9,6 +9,7 @@ system_type         = "dev"
 zone                = ["ap-northeast-2a"]
 subnet_public_cidr  = ["10.0.1.0/24"]
 subnet_private_cidr = ["10.0.2.0/24"]
+nat_install         = true
 
 
 # # EC2

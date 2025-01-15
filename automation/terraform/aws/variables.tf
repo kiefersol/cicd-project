@@ -40,3 +40,8 @@ variable "subnet_private_cidr" {
   description = "private subnet cidr"
   type        = list(string)
 }
+
+variable "nat_install" {
+  description = "nat install"
+  type        = bool
+}

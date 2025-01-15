@@ -1,7 +1,7 @@
 # public subnet - bastion ec2, lb 사용 서브넷
 module "sol_subnet_public" {
   source                  = "./modules/subnet"
-  count                   = 1
+  count                   = length(var.zone)
   vpc_id                  = data.aws_vpc.vpc_info.id
   cidr_block              = var.subnet_public_cidr[count.index]
   availability_zone       = var.zone[count.index]
