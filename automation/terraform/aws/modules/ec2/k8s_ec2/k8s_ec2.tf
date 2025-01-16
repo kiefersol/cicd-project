@@ -20,8 +20,8 @@ resource "aws_instance" "sol_ec2" {
     volume_type           = "gp2"
   }
   tags = tomap({
-    "Name"                                  = var.ec2_name,
-    "kubernetes.io/cluster/${var.vpc_name}" = "owned",
-    "type"                                  = "${var.vpc_name}"
+    "Name"                                                     = var.ec2_name,
+    "kubernetes.io/cluster/${var.vpc_name}/${var.system_type}" = "owned",
+    "type"                                                     = "${var.vpc_name}-${var.system_type}"
   })
 }

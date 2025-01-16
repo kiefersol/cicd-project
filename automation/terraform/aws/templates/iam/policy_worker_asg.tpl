@@ -4,8 +4,7 @@
       {
         "Action" : [
           "ec2:*",
-          "elasticloadbalancing:*",
-          "route53:*",
+		  "elasticloadbalancing:*",
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
@@ -13,10 +12,12 @@
           "ecr:DescribeRepositories",
           "ecr:ListImages",
           "ecr:BatchGetImage",
-          "kms:DescribeKey",
-          "kms:Decrypt",
-          "kms:GenerateDataKeyWithoutPlaintext",
-          "kms:CreateGrant"
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeTags",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
         ],
         "Resource" : "*",
         "Effect" : "Allow"

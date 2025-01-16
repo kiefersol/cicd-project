@@ -24,8 +24,8 @@ resource "aws_security_group" "sol_sg" {
 
   }
   tags = tomap({
-    "Name"                                  = var.sg_name,
-    "kubernetes.io/cluster/${var.vpc_name}" = "owned"
+    "Name"                                                     = var.sg_name,
+    "kubernetes.io/cluster/${var.vpc_name}/${var.system_type}" = "owned"
   })
 }
   

@@ -27,3 +27,8 @@ variable "vpc_name" {
   description = "vpc name"
   type        = string
 }
+
+variable "system_type" {
+  description = "system type"
+  type        = string
+}
