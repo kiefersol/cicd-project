@@ -4,7 +4,7 @@
       {
         "Action" : [
           "ec2:*",
-		  "elasticloadbalancing:*",
+		      "elasticloadbalancing:*",
           "ecr:GetAuthorizationToken",
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",

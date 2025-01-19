@@ -51,6 +51,16 @@ variable "nas_install" {
   type        = bool
 }
 
+variable "nas_infra_access_point" {
+  description = "infra efs access point"
+  type        = string
+}
+
+variable "nas_kubernetes_access_point" {
+  description = "kubernetes efs access point"
+  type        = string
+}
+
 # kubernetes
 variable "k8s_eks_install" {
   description = "kubernetes eks install"
