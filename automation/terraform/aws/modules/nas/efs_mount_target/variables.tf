@@ -8,7 +8,7 @@ variable "subnet_id" {
   type        = string
 }
 
-variable "acg_id" {
+variable "sg_id" {
   description = "acg_id"
   type        = list(string)
 }

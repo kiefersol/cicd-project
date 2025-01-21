@@ -202,3 +202,96 @@ variable "ansible_vars" {
   description = "ansible vars template file"
   type        = string
 }
+
+### LB target group Variables - infra
+variable "lb_infra_component_list" {
+  description = "infra lb component list"
+  type        = list(string)
+}
+
+variable "lb_infra_target_group_port" {
+  description = "infra lb target group port"
+  type        = list(number)
+}
+
+variable "lb_infra_target_group_health_check_port" {
+  description = "infra lb target group health check port"
+  type        = list(number)
+}
+
+variable "lb_infra_target_group_health_check_cycle" {
+  description = "infra lb target group health check cycle"
+  default     = 30
+  type        = number
+}
+
+variable "lb_infra_target_group_health_check_up_threshold" {
+  description = "infra lb target group health check up threshold"
+  default     = 2
+  type        = number
+}
+
+variable "lb_infra_target_group_health_check_down_threshold" {
+  description = "infra lb target group health check down threshold"
+  default     = 2
+  type        = number
+}
+
+### LB listener variable - infra
+variable "lb_infra_listener_protocol" {
+  description = "infra lb listener protocol"
+  default     = "TCP"
+  type        = string
+}
+
+variable "lb_infra_listener_port" {
+  description = "infra lb listener port"
+  type        = list(number)
+}
+
+### LB target group Variables - k8s
+variable "lb_k8s_component_list" {
+  description = "k8s lb component list"
+  type        = list(string)
+}
+
+variable "lb_k8s_target_group_port" {
+  description = "k8s lb target group port"
+  type        = list(number)
+}
+
+variable "lb_k8s_target_group_health_check_port" {
+  description = "k8s lb target group health check port"
+  type        = list(number)
+}
+
+variable "lb_k8s_target_group_health_check_cycle" {
+  description = "k8s lb target group health check cycle"
+  default     = 30
+  type        = number
+}
+
+variable "lb_k8s_target_group_health_check_up_threshold" {
+  description = "k8s lb target group health check up threshold"
+  default     = 2
+  type        = number
+}
+
+variable "lb_k8s_target_group_health_check_down_threshold" {
+  description = "k8s lb target group health check down threshold"
+  default     = 2
+  type        = number
+}
+
+### LB listener variable - k8s
+variable "lb_k8s_listener_protocol" {
+  description = "k8s lb listener protocol"
+  default     = "TCP"
+  type        = string
+}
+
+variable "lb_k8s_listener_port" {
+  description = "k8s lb listener port"
+  type        = list(number)
+}
+

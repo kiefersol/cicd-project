@@ -15,7 +15,7 @@ module "sol_efs_mount_target" {
   count     = length(var.zone)
   efs_id    = module.sol_efs[0].efs_info.id
   subnet_id = module.sol_subnet_private[count.index].subnet_info.id
-  acg_id    = [module.sol_nas_sg[0].sg_info.id]
+  sg_id     = [module.sol_nas_sg[0].sg_info.id]
 }
 
 module "sol_efs_access_point_infra" {
