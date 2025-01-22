@@ -16,14 +16,11 @@ nas_install                 = true
 nas_infra_access_point      = "/mnt/nfs"
 nas_kubernetes_access_point = "/"
 
-# eks 사용
-k8s_eks_install       = false
-k8s_nodegroup_install = false
-
-# eks 사용하지 않고 kubeadm 사용
+# kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = false
-k8s_manual_worker_asg_install = false
+k8s_ami_make                  = true
+k8s_manual_worker_asg_install = true
+k8s_nodeport                  = true
 
 # EC2
 infra_count  = 1
@@ -65,11 +62,20 @@ lb_k8s_listener_port                  = [6443]
 lb_k8s_target_group_port              = [6443]
 lb_k8s_target_group_health_check_port = [6443]
 
+# k8s auto scaling group
+k8s_asg_product_code     = "t2.medium" // vCPU 2EA, Memory 4GB
+k8s_asg_root_volume_size = 50
+k8s_asg_ebs_volume_size  = 70
+k8s_asg_max_size         = 2
+k8s_asg_min_size         = 2
+k8s_asg_desired_capacity = 2
+
 # template file
-infra_init    = "./templates/infra_init.tpl" //infra vm init template
-k8s_init      = "./templates/k8s_init.tpl"   //kubeadm master init template
-ansible_hosts = "./templates/hosts.tpl"      //kubeadm ansible host template
-ansible_vars  = "./templates/vars.tpl"       //kubeadm ansible vars template
+infra_init    = "./templates/init_script/infra_init.tpl"   //infra vm init template
+k8s_init      = "./templates/init_script/k8s_init.tpl"     //kubeadm init template
+k8s_asg_init  = "./templates/init_script/k8s_asg_init.tpl" //kubeadm worker auto scaling group init template
+ansible_hosts = "./templates/hosts.tpl"                    //kubeadm ansible host template
+ansible_vars  = "./templates/vars.tpl"                     //kubeadm ansible vars template
 
 
 

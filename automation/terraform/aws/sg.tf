@@ -142,27 +142,3 @@ module "sol_worker_asg_sg" {
   vpc_name     = var.vpc_name
   system_type  = var.system_type
 }
-
-module "sol_eks_sg" {
-  source       = "./modules/sg"
-  count        = var.k8s_eks_install ? 1 : 0
-  sg_name      = join("-", ["${var.vpc_name}", "${var.system_type}", "eks", "sg"])
-  description  = "Security Group For EKS"
-  vpc_id       = data.aws_vpc.vpc_info.id
-  ingress_list = concat(local.private_subnet_cidr_ingress, local.public_subnet_cidr_ingress, local.nat_ip_sg_rules_ingress, local.jumpbox_sg_rules_ingress, local.ansible_ip_rules_ingress)
-  egress_list  = local.default_sg_rules_egress
-  vpc_name     = var.vpc_name
-  system_type  = var.system_type
-}
-
-module "sol_node_group_sg" {
-  source       = "./modules/sg"
-  count        = var.k8s_nodegroup_install ? 1 : 0
-  sg_name      = join("-", ["${var.vpc_name}", "${var.system_type}", "node_group", "sg"])
-  description  = "Security Group For Node Group"
-  vpc_id       = data.aws_vpc.vpc_info.id
-  ingress_list = concat(local.private_subnet_cidr_ingress, local.public_subnet_cidr_ingress, local.nat_ip_sg_rules_ingress, local.jumpbox_sg_rules_ingress, local.ansible_ip_rules_ingress)
-  egress_list  = local.default_sg_rules_egress
-  vpc_name     = var.vpc_name
-  system_type  = var.system_type
-}

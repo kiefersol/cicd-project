@@ -62,16 +62,6 @@ variable "nas_kubernetes_access_point" {
 }
 
 # kubernetes
-variable "k8s_eks_install" {
-  description = "kubernetes eks install"
-  type        = bool
-}
-
-variable "k8s_nodegroup_install" {
-  description = "kubernetes nodegroup install"
-  type        = bool
-}
-
 variable "k8s_manual_install" {
   description = "kubernetes manual install"
   type        = bool
@@ -84,6 +74,11 @@ variable "k8s_ami_make" {
 
 variable "k8s_manual_worker_asg_install" {
   description = "kubernetes autoscaling group install"
+  type        = bool
+}
+
+variable "k8s_nodeport" {
+  description = "k8s nodeport"
   type        = bool
 }
 
@@ -193,6 +188,11 @@ variable "k8s_init" {
   type        = string
 }
 
+variable "k8s_asg_init" {
+  description = "k8s auto scaling group (worker) init script"
+  type        = string
+}
+
 variable "ansible_hosts" {
   description = "ansible host template file"
   type        = string
@@ -295,3 +295,33 @@ variable "lb_k8s_listener_port" {
   type        = list(number)
 }
 
+### kubernetes Auto Scaling group
+variable "k8s_asg_product_code" {
+  description = "k8s_asg_product_code"
+  type        = string
+}
+
+variable "k8s_asg_root_volume_size" {
+  description = "k8s_asg_root_volume_size"
+  type        = number
+}
+
+variable "k8s_asg_ebs_volume_size" {
+  description = "k8s_asg_ebs_volume_size"
+  type        = number
+}
+
+variable "k8s_asg_max_size" {
+  description = "k8s_asg_max_size"
+  type        = number
+}
+
+variable "k8s_asg_min_size" {
+  description = "k8s_asg_min_size"
+  type        = number
+}
+
+variable "k8s_asg_desired_capacity" {
+  description = "k8s_asg_desired_capacity"
+  type        = number
+}

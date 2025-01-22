@@ -39,7 +39,7 @@ module "sol_lb_k8s_target_group_attachment_master1" {
 
 module "sol_lb_k8s_target_group_attachment_master2" {
   source             = "./modules/loadbalancer/target_group_attachment"
-  count              = var.master_count == 3 ? length(var.lb_k8s_component_list) : 0
+  count              = var.master_count == 2 ? length(var.lb_k8s_component_list) : 0
   target_group_arn   = module.sol_lb_k8s_target_group[count.index].lb_target_group_info.arn
   target_instance_id = module.sol_master_node[1].ec2_info.id
 }
@@ -47,6 +47,27 @@ module "sol_lb_k8s_target_group_attachment_master2" {
 module "sol_lb_k8s_target_group_attachment_master3" {
   source             = "./modules/loadbalancer/target_group_attachment"
   count              = var.master_count == 3 ? length(var.lb_k8s_component_list) : 0
+  target_group_arn   = module.sol_lb_k8s_target_group[count.index].lb_target_group_info.arn
+  target_instance_id = module.sol_master_node[2].ec2_info.id
+}
+
+module "sol_lb_k8s_target_group_attachment_worker1" {
+  source             = "./modules/loadbalancer/target_group_attachment"
+  count              = (var.k8s_nodeport && var.worker_count == 1) ? length(var.lb_k8s_component_list) : 0
+  target_group_arn   = module.sol_lb_k8s_target_group[count.index].lb_target_group_info.arn
+  target_instance_id = module.sol_master_node[0].ec2_info.id
+}
+
+module "sol_lb_k8s_target_group_attachment_worker2" {
+  source             = "./modules/loadbalancer/target_group_attachment"
+  count              = (var.k8s_nodeport && var.worker_count == 2) ? length(var.lb_k8s_component_list) : 0
+  target_group_arn   = module.sol_lb_k8s_target_group[count.index].lb_target_group_info.arn
+  target_instance_id = module.sol_master_node[1].ec2_info.id
+}
+
+module "sol_lb_k8s_target_group_attachment_worker3" {
+  source             = "./modules/loadbalancer/target_group_attachment"
+  count              = (var.k8s_nodeport && var.worker_count == 3) ? length(var.lb_k8s_component_list) : 0
   target_group_arn   = module.sol_lb_k8s_target_group[count.index].lb_target_group_info.arn
   target_instance_id = module.sol_master_node[2].ec2_info.id
 }
