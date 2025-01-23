@@ -203,6 +203,17 @@ variable "ansible_vars" {
   type        = string
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+variable "ansible_path" {
+  description = "aansible install path"
+  type        = string
+}
+
+>>>>>>> 7173cd0... terraform ansible
+>>>>>>> 01966f6... recommit
 ### LB target group Variables - infra
 variable "lb_infra_component_list" {
   description = "infra lb component list"
@@ -325,3 +336,19 @@ variable "k8s_asg_desired_capacity" {
   description = "k8s_asg_desired_capacity"
   type        = number
 }
+
+variable "k8s_version" {
+  description = "kubernetes version"
+  type        = string
+}
+
+variable "k8s_pod_cidr" {
+  description = "kubernetes pod cidr"
+  type        = string
+}
+
+variable "k8s_service_cidr" {
+  description = "kubernetes service cidr"
+  type        = string
+}
+

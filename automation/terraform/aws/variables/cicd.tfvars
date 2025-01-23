@@ -44,6 +44,16 @@ lb_infra_listener_port                  = [5443, 8443, 8081, 8080]
 lb_infra_target_group_port              = [5443, 8443, 8081, 8080]
 lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080]
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+k8s_version      = "1.30.1"
+k8s_pod_cidr     = "20.0.0.0/10"
+k8s_service_cidr = "25.0.0.0/16"
+
+>>>>>>> 7173cd0... terraform ansible
+>>>>>>> 01966f6... recommit
 # k8s master vm
 master_image_code                 = "ami-053171b6ca2943bce"
 master_product_code               = "t2.medium" // vCPU 2EA, Memory 4GB 
@@ -74,8 +84,11 @@ k8s_asg_desired_capacity = 2
 infra_init    = "./templates/init_script/infra_init.tpl"   //infra vm init template
 k8s_init      = "./templates/init_script/k8s_init.tpl"     //kubeadm init template
 k8s_asg_init  = "./templates/init_script/k8s_asg_init.tpl" //kubeadm worker auto scaling group init template
-ansible_hosts = "./templates/hosts.tpl"                    //kubeadm ansible host template
+
+ansible_hosts = "./templates/hosts.tpl"                    //kubeadm ansible host template - ec2 worker
 ansible_vars  = "./templates/vars.tpl"                     //kubeadm ansible vars template
+
+ansible_path = "/home/sol/cicd-project/automation"
 
 
 
