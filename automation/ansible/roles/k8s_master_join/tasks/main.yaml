@@ -1,0 +1,115 @@
+---
+- name: regenerate machine id
+  become: yes
+  shell: systemd-machine-id-setup
+  when: '"{{cloud_provider}}" == "manual"'
+
+# - name: Copy Ansible kubernetes cert directory to remote /etc
+#   become: yes
+#   copy:
+#     src: ../files/k8s_cert/kubernetes
+#     dest: "/etc"
+
+# - name: remove /etc/kubernetes/kubelet.conf
+#   become: yes
+#   shell: rm /etc/kubernetes/kubelet.conf
+
+- name: Find token command - awsX
+  command: kubeadm token create --print-join-command
+  delegate_to: "{{ groups['master'][0] }}"
+  register: token_body
+  when: '"{{cloud_provider}}" != "manual"'
+
+- name: Generate new certificate-key - awsX
+  become: yes
+  command: kubeadm init phase upload-certs --upload-certs
+  delegate_to: "{{ groups['master'][0] }}"
+  register: certificate_key
+  when: '"{{cloud_provider}}" != "manual"'
+
+- name: Join sub master into the main master - awsX
+  become: yes
+  command: "{{token_body.stdout_lines[0]}} --control-plane --certificate-key {{certificate_key.stdout_lines[2]}}"
+  register: check
+  when: '"{{cloud_provider}}" != "manual"'
+
+- name: Find token command 
+  command: kubeadm token create
+  delegate_to: "{{ groups['master'][0] }}"
+  register: token
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Find certHashes command
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  delegate_to: "{{ groups['master'][0] }}"
+  register: certHashes
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Find node name
+  command: uname -n
+  register: node_name
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Find ip address
+  shell: hostname -I |  cut -d ' ' -f1,1
+  register: ip_address
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Generate new certificate-key
+  become: yes
+  shell: kubeadm init phase upload-certs --upload-certs | tail -1
+  delegate_to: "{{ groups['master'][0] }}"
+  register: certificate_key
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: insert variable
+  set_fact:
+    token: "{{token.stdout}}"
+    k8s_lb: "{{k8s_lb_domain}}"
+    certHashes: "{{certHashes.stdout}}"
+    node_name: "{{node_name.stdout}}"
+    ip_address: "{{ip_address.stdout}}"
+    certificate_key: "{{certificate_key.stdout}}"
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: configure output template
+  template:
+    src: "./templates/install_k8s/k8s_master_join_aws.j2"
+    dest: ./master_join.yaml
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: kubeadm master join
+  become: yes
+  shell: kubeadm join --config ./master_join.yaml
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Resolving Home Dir  
+  shell: echo $HOME
+  register: home_dir
+
+- name: make directory .kube/config  
+  shell: mkdir -p '{{home_dir.stdout_lines[0]}}'/.kube
+
+- name: Copy admin.conf to .kube folder
+  become: yes
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "~{{ ansible_user }}/.kube/config"
+    remote_src: yes
+
+- name: Get group id  
+  shell: id -u; id -g;
+  register: account_id
+
+- name: Update file owner
+  become: yes
+  shell: chown {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} '{{home_dir.stdout_lines[0]}}'/.kube/config
+
+
+
+
+
+
+
+
+

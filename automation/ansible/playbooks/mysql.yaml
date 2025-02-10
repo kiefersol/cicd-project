@@ -1,0 +1,8 @@
+---
+- name: install mysql for bxcm
+  hosts: mysql
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - mysql

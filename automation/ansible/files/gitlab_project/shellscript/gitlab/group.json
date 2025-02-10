@@ -1,0 +1,5 @@
+{
+    "name": "[GITLAB_GROUP_NAME]",
+    "path": "[GITLAB_GROUP_PATH]",
+    "visibility": "internal"
+}

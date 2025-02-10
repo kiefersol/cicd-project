@@ -1,0 +1,165 @@
+--- 
+- name: nslookup infra lb ip
+  connection: local
+  shell: "nslookup {{infra_lb_domain}} | grep Address | tail -1 | tr ':' '\n' | tail -1 | sed 's/^ *//'"
+  register: lb_ip
+
+- name: insert variable
+  set_fact:
+    lb_ip: "{{lb_ip.stdout}}" 
+
+- name: input hosts
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "{{lb_ip}} {{gitlab_host}}"
+    create: yes
+
+- name: input hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 {{gitlab_host}}"
+    create: yes
+
+- name: create Gitlab directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{gitlab_install_dir}}'
+    - '{{gitlab_config_dir}}'
+    - '{{gitlab_log_dir}}'
+    - '{{gitlab_data_dir}}'
+
+- name: create directory
+  file:
+    path: '{{gitlab_ssl_dir}}'
+    state: directory
+    mode: 0744
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+- debug: var=account_id
+
+- name: Update file owner
+  shell: chown -R {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} {{item}}
+  loop:
+    - '{{gitlab_config_dir}}'
+    - '{{gitlab_log_dir}}'
+    - '{{gitlab_data_dir}}'
+    - '{{gitlab_data_dir}}'
+
+- name: Update file owner
+  shell: chown -R {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} {{item}}
+  loop:
+    - '{{gitlab_ssl_dir}}'
+
+- name: list directory
+  connection: local
+  shell: "ls -d ../files/ssl_cert/gitlab/*"
+  register: gitlab_cert
+
+- name: copy key & cert from local 
+  copy:
+    src: '{{item}}'
+    dest: '{{gitlab_ssl_dir}}'
+    mode: 0644
+  with_items:
+     - "{{ gitlab_cert.stdout_lines }}"
+
+- name: make external name gitlab cert from local 
+  shell: cd {{gitlab_ssl_dir}}; cp ./{{gitlab_host}}.crt ./{{infra_lb_domain}}.crt
+
+- name: make external name gitlab key from local 
+  shell: cd {{gitlab_ssl_dir}}; cp ./{{gitlab_host}}.key ./{{infra_lb_domain}}.key
+
+- name: insert variable
+  set_fact:
+    gitlab_host: "{{gitlab_host}}"
+    gitlab_external_url: "{{infra_lb_domain}}:{{gitlab_https_port}}"
+    gitlab_port: "{{gitlab_https_port}}"
+    gitlab_config_dir : "{{gitlab_config_dir}}"
+    gitlab_log_dir : "{{gitlab_log_dir}}"
+    gitlab_data_dir : "{{gitlab_data_dir}}"
+    gitlab_password : "{{gitlab_password}}"
+    gitlab_cpu : "{{gitlab_cpu}}"
+    gitlab_memory : "{{gitlab_memory}}"
+    gitlab_image : "docker.io/gitlab/gitlab-ce:15.7.8-ce.0"
+
+- name: configure gitlab template
+  template:
+    src: ../templates/infra/gitlab/gitlab_run.j2
+    dest: "{{install_shell_dir}}/startGitlab.sh"
+    mode: 0755
+
+- name: install gitlab
+  shell: {{install_shell_dir}}/startGitlab.sh;
+  register: installing
+- debug: var=installing
+
+- name: configure gitlab change root username template
+  template:
+    src: ../templates/infra/gitlab/gitlab_change_root_username.j2
+    dest: "{{install_shell_dir}}/gitlab_change_root_username.sh"
+    mode: 0755
+
+- name: change gitlab change root username
+  shell: {{install_shell_dir}}/gitlab_change_root_username.sh;
+  register: installing
+- debug: var=installing
+
+- name: configure gitlab project create shell
+  connection: local
+  template:
+    src: ../templates/infra/gitlab/gitlab_create_project.j2
+    dest: "../files/gitlab_project/gitlab_create.sh"
+    mode: 0755
+
+- name: create gitlab default project
+  connection: local
+  shell: ../files/gitlab_project/gitlab_create.sh
+  register: installing
+- debug: var=installing
+
+- name: configure gitlab project create shell
+  connection: local
+  template:
+    src: ../templates/infra/gitlab/{{item}}.j2
+    dest: "../files/gitlab_project/bookinfo/{{item}}/init.sh"
+    mode: 0755
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+
+- name: push bookinfo sample1
+  connection: local
+  shell: git config --global --add safe.directory ../files/gitlab_project/bookinfo/{{item}}
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+  register: installing
+- debug: var=installing
+
+- name: push bookinfo sample2
+  connection: local
+  shell: cd ../files/gitlab_project/bookinfo/{{item}}/; ./init.sh
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+  register: installing
+- debug: var=installing
+
+
+
+
+
+

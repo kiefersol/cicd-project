@@ -1,0 +1,8 @@
+password.tf
+automation/terraform/aws/.terraform/*
+automation/terraform/aws/.terraform.lock.hcl
+automation/terraform/aws/restart/.terraform/*
+automation/terraform/aws/restart/.terraform.lock.hcl
+automation/ansible/files/ssl_cert/*
+automation/ansible/files/harbor/install/*.tar.gz
+automation/ansible/files/k8s_cert/*

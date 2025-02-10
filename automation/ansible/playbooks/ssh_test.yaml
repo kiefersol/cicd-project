@@ -1,0 +1,8 @@
+---
+- name: ssh connect test
+  hosts: all
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - ssh_test

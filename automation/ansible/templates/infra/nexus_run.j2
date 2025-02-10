@@ -1,0 +1,7 @@
+docker run --detach \
+  -p {{nexus_port}}:8081 \
+  --name nexus \
+  --volume {{nexus_data_dir}}:/nexus-data \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro \
+  {{nexus_image}}

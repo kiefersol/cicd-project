@@ -1,0 +1,17 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    token: "{{token}}"
+    apiServerEndpoint: "{{k8s_lb}}:6443"
+    caCertHashes:
+      - "sha256:{{certHashes}}"
+nodeRegistration:
+  name: "{{node_name}}"
+  kubeletExtraArgs:
+    cloud-provider: external
+controlPlane:
+  localAPIEndpoint:
+    advertiseAddress: "{{ip_address}}"
+  certificateKey: "{{certificate_key}}"

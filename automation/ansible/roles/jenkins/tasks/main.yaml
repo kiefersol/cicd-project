@@ -1,0 +1,45 @@
+---  
+- name: Creating Jenkins directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0777
+  loop:
+    - '{{jenkins_dir}}'  
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+- debug: var=account_id
+
+- name: Update file owner
+  shell: chown -R {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} {{item}}
+  loop:
+    - '{{ jenkins_dir }}'
+
+- name: Update file mode
+  shell: chmod -R 777 {{item}}
+  loop:
+    - '{{ jenkins_dir }}'
+
+- name: insert variable
+  set_fact:
+    jenkins_port: "{{jenkins_port}}"
+    jenkins_agent_port: "{{jenkins_agent_port}}"
+    jenkins_dir : "{{jenkins_dir}}"
+    jenkins_memory : "{{jenkins_memory}}"
+    jenkins_image : "docker.io/jenkins/jenkins:2.417"
+
+- name: configure output template
+  template:
+    src: "../templates/infra/jenkins_run.j2"
+    dest: {{install_shell_dir}}/jenkins_run.sh
+
+- name: give permission to output file
+  shell: chmod 755 {{install_shell_dir}}/jenkins_run.sh
+  args:
+    warn: false
+
+- name:  jenkins container
+  shell: {{install_shell_dir}}/jenkins_run.sh

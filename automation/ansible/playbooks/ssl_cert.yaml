@@ -1,0 +1,9 @@
+---
+- name: ssl cert generation
+  hosts: localhost
+  connection: local
+  become: no
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - ssl_cert

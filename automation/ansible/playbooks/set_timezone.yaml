@@ -1,0 +1,9 @@
+---
+- name: set timezone - Asia/Seoul
+  hosts: all
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - set_timezone

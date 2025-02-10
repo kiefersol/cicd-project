@@ -1,0 +1,12 @@
+{
+    "id": "[GITLAB_PROJECT_ID]",
+    "branch": "master",
+    "commit_message": "committed automatically by bxcp",
+    "actions": [
+        {
+            "action": "create",
+            "file_path": "[GITLAB_ADD_PATH]",
+            "content": "Created by bxcp, you can delete this file."
+        }
+    ]
+}

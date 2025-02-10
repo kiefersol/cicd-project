@@ -1,0 +1,150 @@
+---  
+# /etc/hosts에 등록
+- name: nslookup infra lb ip
+  connection: local
+  shell: "nslookup {{infra_lb_domain}} | grep Address | tail -1 | tr ':' '\n' | tail -1 | sed 's/^ *//'"
+  register: lb_ip
+
+- name: insert variable
+  set_fact:
+    lb_ip: "{{lb_ip.stdout}}" 
+
+- name: input hosts
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "{{lb_ip}} {{harbor_cert_CN}}"
+    create: yes
+  
+- name: input hosts
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1 {{harbor_cert_CN}}"
+    create: yes
+
+# ssl 처리, docker insecure 처리
+- name: create ssl directory
+  become: yes
+  file:
+    path: "{{harbor_ssl_path}}"
+    state: directory
+  when: harbor_ssl == true
+
+- name: copy key & cert from local
+  become: yes
+  copy:
+    src: "../files/ssl_cert/harbor"
+    dest: "{{harbor_ssl_path}}"
+    mode: 0644
+  when: harbor_ssl == true
+
+- name: create docker client cert directory  
+  file:
+    path: "/etc/docker/certs.d/{{harbor_cert_CN}}:{{harbor_https_port}}"
+    state: directory
+    mode: 0755
+  when: harbor_ssl == true
+
+- name: create docker client cert directory  
+  file:
+    path: "/etc/docker/certs.d/{{infra_lb_domain}}:{{harbor_https_port}}"
+    state: directory
+    mode: 0755
+  when: harbor_ssl == true
+
+- name: copy rootCA from local  
+  copy:
+    src: "../files/ssl_cert/rootCA.pem"
+    dest: "/etc/docker/certs.d/{{harbor_cert_CN}}:{{harbor_https_port}}/ca.crt"
+    mode: 0600
+  when: harbor_ssl == true
+
+- name: copy rootCA from local  
+  copy:
+    src: "../files/ssl_cert/rootCA.pem"
+    dest: "/etc/docker/certs.d/{{infra_lb_domain}}:{{harbor_https_port}}/ca.crt"
+    mode: 0600
+  when: harbor_ssl == true
+
+# harbor 설치  
+- name: create directory
+  become: yes
+  file:
+    path: "{{harbor_install_dir}}"
+    state: directory
+
+- name: copy directory to the remote server 
+  become: yes
+  copy:
+    src: "../files/harbor/"
+    dest: "{{harbor_install_dir}}"
+    mode: 0755
+
+- name: create directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0744
+  loop:
+    - '{{harbor_data_dir}}'
+    - '{{harbor_log_dir}}'
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+- debug: var=account_id
+
+- name: Update file owner
+  shell: chown -R {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} {{item}}
+  loop:
+    - '{{harbor_data_dir}}'
+    - '{{harbor_log_dir}}'
+
+- name: configure harbor template
+  become: yes
+  template:
+    src: ../templates/infra/harbor/harbor.j2
+    dest: "{{harbor_install_dir}}/install/harbor.yml"
+
+- name: Copy docker-compose binary to node
+  copy:
+    src: "../files/harbor/docker-compose"
+    dest: /usr/bin/docker-compose
+    mode: 0755
+
+- name: install harbor
+  shell: cd {{harbor_install_dir}}/install; ./install.sh --with-clair --with-chartmuseum
+  register: installing
+- debug: var=installing
+
+- name: Make sure service has time to start
+  pause:
+    seconds: 60
+    
+# harbor admin username 바꾸기
+- name: configure change harbor admin username
+  become: yes
+  template:
+    src: "../templates/infra/harbor/harbor_change_username.j2"
+    dest: "{{harbor_data_dir}}/database/harbor_change_username.sql"
+
+- name: change harbor admin username
+  shell: 'docker exec -it harbor-db bash -c "cd /var/lib/postgresql/data;psql -U postgres -d registry < harbor_change_username.sql"'
+
+# harbor 기본 프로젝트 만들기
+- name: configure harbor project create shell
+  template:
+    src: "../templates/infra/harbor/harbor_create_project.j2"
+    dest: "/tmp/harbor_create.sh"
+    mode: 0755
+  when: harbor_ssl == true
+  
+- name: create harbor default project
+  shell: cd /tmp; ./harbor_create.sh
+  register: installing
+- debug: var=installing
+
+
+  

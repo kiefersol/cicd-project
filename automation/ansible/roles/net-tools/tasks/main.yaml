@@ -1,0 +1,7 @@
+--- 
+# net-tools 설치
+- name: rpm net-tools install
+  yum:
+    name: net-tools
+    state: present
+  when: ansible_distribution == "CentOS"

@@ -1,0 +1,49 @@
+---
+# infra node에서 docker container로 sonarqube용 mysql 설치
+- name: create directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{sonarqube_mysql_dir}}'
+
+- name: insert variable
+  set_fact:
+    sonarqube_mysq_user: "sonar"
+    sonarqube_mysq_password: "sonar"
+    sonarqube_mysq_root_password: "sonar"
+    sonarqube_mysql_database: "sonar"
+    sonarqube_mysql_dir: "{{sonarqube_mysql_dir}}"
+    sonarqube_mysql_port: "{{sonarqube_mysql_port}}"
+    sonarqube_mysql_image: "docker.io/library/mysql:5.7"
+    sonarqube_image: "docker.io/library/sonarqube:7.7-community"
+    sonarqube_port: "{{sonarqube_port}}"
+
+- name: configure output template
+  template:
+    src: "../templates/infra/sonarqube_mysql_run.j2"
+    dest: {{install_shell_dir}}/sonarqube_mysql_run.sh
+
+- name: configure output template
+  template:
+    src: "../templates/infra/sonarqube_run.j2"
+    dest: {{install_shell_dir}}/sonarqube_run.sh
+
+- name: give permission to output file
+  shell: chmod 755 {{install_shell_dir}}/sonarqube_mysql_run.sh
+  args:
+    warn: false
+
+- name: give permission to output file
+  shell: chmod 755 {{install_shell_dir}}/sonarqube_run.sh
+  args:
+    warn: false
+
+- name: sonarqube mysql container
+  shell: {{install_shell_dir}}/sonarqube_mysql_run.sh
+
+- name: sonarqube container
+  shell: {{install_shell_dir}}/sonarqube_run.sh
+
+

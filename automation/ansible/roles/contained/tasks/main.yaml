@@ -1,0 +1,116 @@
+---
+- name: create containerd root directory
+  file:
+    path: "{{containerd_root_dir}}"
+    state: directory
+
+- name: Create a empty file for containerd module.
+  copy:
+    content: ""
+    dest: /etc/modules-load.d/containerd.conf
+    force: no
+
+- name: Configure module for containerd.
+  blockinfile:
+    path: /etc/modules-load.d/containerd.conf 
+    block: |
+      overlay
+      br_netfilter
+
+- name: modprobe overlay
+  shell: "modprobe overlay"
+
+- name: modprobe br_netfilter
+  shell: "modprobe br_netfilter"
+
+- name: Create a empty file for kubernetes sysctl params.
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+    force: no
+
+- name: Configure sysctl params for Kubernetes.
+  lineinfile:
+    path: /etc/sysctl.d/99-kubernetes-cri.conf 
+    line: "{{ item }}"
+  with_items:
+   - 'net.bridge.bridge-nf-call-iptables  = 1'
+   - 'net.ipv4.ip_forward                 = 1'
+   - 'net.bridge.bridge-nf-call-ip6tables = 1'
+
+- name: Apply sysctl params without reboot.
+  command: sysctl --system
+
+- name: Create containerd config directory
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: Install required dependencies
+  yum:
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Add Docker repository
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    creates: /etc/yum.repos.d/docker-ce.repo
+  when: ansible_os_family == "RedHat"
+
+- name: Install containerd
+  yum:
+    name: containerd.io-{{containerd_version}}
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: systemctl start containerd
+  shell: "systemctl stop containerd"
+
+- name: remove /etc/containerd/config.toml
+  shell: "rm /etc/containerd/config.toml"
+
+- name: configure and move containerd config file
+  template:
+    src: "./templates/install_k8s/containerd_config.j2"
+    dest: "/etc/containerd/config.toml"
+
+- name: systemctl restart containerd
+  shell: "systemctl restart containerd"
+
+- name: systemctl enable containerd
+  shell: "systemctl enable containerd"
+
+- name: systemctl start containerd
+  shell: "systemctl start containerd"
+
+- name: unarchive crictl 
+  unarchive:
+    src: ../files/containerd/crictl-{{crictl_version}}-linux-amd64.tar.gz
+    dest: /usr/bin
+
+- name: unarchive nerdctl 
+  unarchive:
+    src: ../files/containerd/nerdctl-{{nerdctl_version}}-linux-amd64.tar.gz
+    dest: /usr/bin
+
+- name: Create a empty file /etc/crictl.yaml
+  copy:
+    content: ""
+    dest: /etc/crictl.yaml
+    force: no
+
+- name: Configure sysctl params for Kubernetes.
+  lineinfile:
+    path: /etc/crictl.yaml 
+    line: "{{ item }}"
+  with_items:
+   - 'runtime-endpoint: unix:///run/containerd/containerd.sock'
+   - 'image-endpoint: unix:///run/containerd/containerd.sock'
+
+- name: chmod containerd.sock"
+  shell: "chmod 666 /run/containerd/containerd.sock"

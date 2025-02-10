@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+sleep 360
+echo "change gitlab administrator username"
+docker exec -it gitlab gitlab-rails runner -e production '
+user=User.where(id: 1).first
+user.username="{{gitlab_root_username}}"
+user.save
+'
+echo "changed gitlab administrator username"

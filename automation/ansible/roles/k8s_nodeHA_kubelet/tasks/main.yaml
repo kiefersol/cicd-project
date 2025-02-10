@@ -1,0 +1,23 @@
+---
+#kubelet이 노드 상태를 API 서버에 게시하는 빈도를 지정
+
+- name: system kubelet stop
+  shell: systemctl stop kubelet
+
+- name: remove kubeadm-flags.env file
+  shell: rm /var/lib/kubelet/kubeadm-flags.env
+  ignore_errors: yes
+  when: ansible_os_family == "RedHat"
+
+- name: configure gitlab project create shell
+  template:
+    src: ./templates/install_k8s/kubelet-flags.env.j2
+    dest: "/var/lib/kubelet/kubeadm-flags.env"
+    mode: 0644
+  when: ansible_os_family == "RedHat"
+
+- name: system daemon reload
+  shell: systemctl daemon-reload
+
+- name: system kubelet restart
+  shell: systemctl restart kubelet

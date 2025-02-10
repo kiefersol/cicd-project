@@ -1,0 +1,11 @@
+---
+- name: public ssh keygen
+  hosts: localhost
+  become: yes
+  connection: local
+  serial: 1
+  gather_facts: no 
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - ssh_known_host

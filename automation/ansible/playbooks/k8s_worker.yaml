@@ -1,0 +1,8 @@
+---
+- name: k8s_worker_task
+  hosts: worker
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_worker

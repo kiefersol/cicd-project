@@ -1,0 +1,8 @@
+---
+- name: Mount NFS to cloud NAS
+  hosts: infra
+  become: yes
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - nfs_connect

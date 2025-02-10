@@ -1,0 +1,42 @@
+---  
+- name: "Creating nexus directory"
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{nexus_data_dir}}'
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+- debug: var=account_id
+
+- name: Update file owner
+  shell: chown -R {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} {{item}}
+  loop:
+    - '{{nexus_data_dir}}'
+
+- name: insert variable
+  set_fact:
+    nexus_port: "{{nexus_port}}"
+    nexus_data_dir: "{{nexus_data_dir}}"
+    nexus_image : "docker.io/sonatype/nexus3:3.42.0"
+
+- name: configure output template
+  template:
+    src: ../templates/infra/nexus_run.j2
+    dest: {{install_shell_dir}}/nexus_run.sh
+
+- name: give permission to output file
+  shell: chmod 755 {{install_shell_dir}}/nexus_run.sh
+  args:
+    warn: false
+
+- name: nexus container
+  shell: {{install_shell_dir}}/nexus_run.sh
+
+
+
+

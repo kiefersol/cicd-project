@@ -1,0 +1,17 @@
+--- 
+########## install nfs-utils
+- name: rpm nfs-utils install
+  yum:
+    name: nfs-utils
+    state: present
+  when: ansible_distribution == "CentOS"
+
+- name: Enable nfs-utils service
+  systemd:
+    name: nfs-server
+    enabled: true
+
+- name: Start nfs-utils service
+  systemd:
+    name: nfs-server
+    state: started

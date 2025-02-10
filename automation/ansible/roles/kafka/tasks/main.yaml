@@ -1,0 +1,36 @@
+---
+- name: create directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0777
+  loop:
+    - '{{kafka1_dir}}'
+    - '{{kafka2_dir}}'
+    - '{{kafka3_dir}}'
+    - '{{zookeeper_dir}}'
+
+- name: insert variable
+  set_fact:
+    zookeeper_image: "docker.io/bitnami/zookeeper:3.5.10"
+    kafka_image: "docker.io/bitnami/kafka:2.7.0-debian-10-r109"
+    zookeeper: "{{zookeeper_dir}}"
+    kafka1_dir: "{{kafka1_dir}}"
+    kafka2_dir: "{{kafka2_dir}}"
+    kafka3_dir: "{{kafka3_dir}}"
+    kafka_ip: "{{kafka_ip}}"
+
+- name: configure output template
+  template:
+    src: ../templates/infra/kafka_run.j2
+    dest: {{install_shell_dir}}/kafka-docker-compose.yml
+
+- name: kafka container
+  shell: cd {{install_shell_dir}}; docker-compose -f ./kafka-docker-compose.yml up -d
+
+
+# kafka 연결 확인법
+# kubectl run my-kafka-client --restart='Never' --image kafka:2.7.0-debian-10-r109 --namespace kafka --command -- sleep infinity
+# 1. kubectl exec --tty -i my-kafka-client --namespace kafka -- bash
+# 2. kafka-console-producer.sh --broker-list 192.168.10.69:9092,192.168.10.69:9093,192.168.10.69:9094 --topic new-topic
+# 3. kafka-console-consumer.sh --bootstrap-server 192.168.10.69:9092,192.168.10.69:9093,192.168.10.69:9094 --topic new-topic --from-beginning 

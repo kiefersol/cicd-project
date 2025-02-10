@@ -1,0 +1,9 @@
+---
+- name: k8s master join task
+  hosts: sub-master 
+  serial: 1
+  become: no
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_master_join

@@ -1,0 +1,8 @@
+---
+- name: setting node High Availability - kube-controller, api-server
+  hosts: master
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_nodeHA_master

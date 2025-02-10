@@ -1,0 +1,47 @@
+---
+- name: unarchive cilium 
+  unarchive:
+    src: ../files/k8s_cni_cilium/cilium.tar.gz
+    dest: /usr/bin
+
+- name: create cluster info sql - loadbalancer
+  connection: local
+  shell: "../files/k8s_cni_cilium/apply.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+    CILIUM_PODCIDR : "{{kubernetes_pod_cidr}}"
+    CILIUM_SUBNETMASK : "24"
+    CILIUM_P8S_ENABLE : "true"
+    CILIUM_OPERATOR_P8S_ENABLE : "true"
+    HUBBLE_ENABLE : "true"
+    HUBBLE_OPEN_METRICS_ENABLE : "true"
+    HUBBLE_RELAY_ENABLE : "true"
+    HUBBLE_UI_ENABLE : "true"
+    HUBBLE_UI_SVC_TYPE : "LoadBalancer"
+  register: installing
+  when: '"{{kubernetes_service_type}}" == "{{item}}"'
+  with_items:
+    - loadbalancer
+- debug: var=installing
+
+- name: create cluster info sql - nodeport
+  connection: local
+  shell: "../files/k8s_cni_cilium/apply.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+    CILIUM_PODCIDR : "{{k8s_pod_cidr}}"
+    CILIUM_SUBNETMASK : "24"
+    CILIUM_P8S_ENABLE : "true"
+    CILIUM_OPERATOR_P8S_ENABLE : "true"
+    HUBBLE_ENABLE : "true"
+    HUBBLE_OPEN_METRICS_ENABLE : "true"
+    HUBBLE_RELAY_ENABLE : "true"
+    HUBBLE_UI_ENABLE : "true"
+    HUBBLE_UI_SVC_TYPE : "NodePort"
+  register: installing
+  when: '"{{kubernetes_service_type}}" == "{{item}}"'
+  with_items:
+    - nodeport
+- debug: var=installing

@@ -1,0 +1,31 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: v{{kubernetes_version}}
+apiServer:
+  extraArgs:
+    cloud-provider: "external"
+clusterName: "kubernetes"
+controlPlaneEndpoint: "{{k8s_api_ip}}:{{k8s_api_port}}"
+networking:
+  serviceSubnet: "{{kubernetes_service_cidr}}"
+  podSubnet: "{{kubernetes_pod_cidr}}"
+controllerManager:
+  extraArgs:
+    cloud-provider: "external"
+    cluster-signing-duration: 876000h0m0s
+---
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+cgroupDriver: systemd
+rotateCertificates: true
+serverTLSBootstrap: true
+containerLogMaxSize: {{kubelet_containerLogMaxSize}}
+containerLogMaxFiles: {{kubelet_containerLogMaxFiles}}
+---
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: InitConfiguration
+nodeRegistration:
+  name: {{node_name}}
+  kubeletExtraArgs:
+    cloud-provider: external

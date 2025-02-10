@@ -1,0 +1,16 @@
+--- 
+# firewalld 설치
+- name: rpm firewalld install
+  yum:
+    name: firewalld
+    state: present
+  when: ansible_distribution == "CentOS"
+
+# 방화벽 끄기
+- name: stop firewall
+  shell: systemctl stop firewalld
+  when: ansible_os_family == "RedHat"
+
+- name: stop firewall
+  shell: systemctl disable firewalld
+  when: ansible_os_family == "RedHat"

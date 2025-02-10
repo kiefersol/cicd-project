@@ -1,0 +1,8 @@
+---
+- name: install mattermost
+  hosts: mattermost
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - mattermost

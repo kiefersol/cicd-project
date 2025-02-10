@@ -1,0 +1,34 @@
+---  
+- name: Get block device name
+  shell: "lsblk | grep disk | awk '{print $1}' | sort | tail -1"
+  register: block_device
+
+- debug:
+    var: block_device
+
+- name: Make file system
+  filesystem:
+    fstype: xfs
+    dev: "/dev/{{ block_device.stdout }}"
+
+- name: Make mount directory
+  file:
+    path: "{{ ec2_ebs_mount_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Mount block device
+  mount:
+    path: "{{ ec2_ebs_mount_path }}"
+    src: "/dev/{{ block_device.stdout }}"
+    fstype: xfs
+    state: mounted
+    opts: defaults,nofail
+
+- name: Register block device in /etc/fstab
+  blockinfile:
+    path: /etc/fstab
+    block: |
+      /dev/{{ block_device.stdout }} {{ ec2_ebs_mount_path }} xfs defaults,nofail 0 2
+    create: yes
+    

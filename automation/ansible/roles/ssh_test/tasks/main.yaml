@@ -1,0 +1,6 @@
+---  
+# ansible 연결 호스트와 ansible 작업 서버 간의 연결성 테스트
+- name: Test
+  command: echo {{ansible_host}}
+  register: file_check
+- debug: var=file_check  

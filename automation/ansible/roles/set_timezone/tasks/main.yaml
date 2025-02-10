@@ -1,0 +1,4 @@
+--- 
+# 타임존 설정
+- name: set timezone - Asia/Seoul
+  shell: timedatectl set-timezone Asia/Seoul

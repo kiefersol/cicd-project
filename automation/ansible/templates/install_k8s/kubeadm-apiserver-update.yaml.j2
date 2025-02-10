@@ -1,0 +1,9 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+kubernetesVersion: v{{kubernetes_version}}
+apiServer:
+  extraArgs:
+    enable-admission-plugins: DefaultTolerationSeconds
+    default-not-ready-toleration-seconds: "{{default_not_ready_toleration_seconds}}"
+    default-unreachable-toleration-seconds: "{{default_unreachable_toleration_seconds}}"

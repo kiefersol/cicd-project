@@ -1,0 +1,9 @@
+{
+    "name": "[GITLAB_PROJECT_NAME]",
+    "path": "[GITLAB_PROJECT_NAME]",
+    "user_id": "[GITLAB_USER_ID]",
+    "namespace_id": "[GITLAB_GROUP_ID]",
+    "visibility": "internal",
+    "initialize_with_readme": "true",
+    "description": "created automatically by sol"
+}

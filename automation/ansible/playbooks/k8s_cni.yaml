@@ -1,0 +1,9 @@
+---
+- name: kubectl apply kubernetes container network interface
+  hosts: master1
+  become: yes  
+  gather_facts: yes 
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_cni

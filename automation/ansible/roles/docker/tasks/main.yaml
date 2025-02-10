@@ -1,0 +1,80 @@
+---
+- name: create docker root directory
+  file:
+    path: "{{docker_root_dir}}"
+    state: directory
+
+- name: create docker daemon directory
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Add Docker repository
+  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    # creates: 조건에 지정된 파일(/etc/yum.repos.d/docker-ce.repo)이 이미 존재하면, Ansible은 이 태스크를 건너뜁니다.
+    creates: /etc/yum.repos.d/docker-ce.repo
+
+# 사용 가능한 도커 버전 확인
+# - name: List available Docker versions
+#   shell: yum list docker-ce --showduplicates | sort -r
+#   register: docker_versions
+#   changed_when: false
+
+# - name: Debug available Docker versions
+#   debug:
+#     msg: "{{ docker_versions.stdout_lines }}"
+
+- name: Install specific version of Docker
+  yum:
+    name:
+    - "docker-ce-{{docker_version}}"
+    - "docker-ce-cli-{{docker_version}}"
+    - "containerd.io-{{containerd_version}}"
+    state: present
+
+- name: configure docker daemon.json template  
+  template:
+    src: ./templates/infra/docker_daemon.j2
+    dest: "/etc/docker/daemon.json"
+
+- name: Reload systemd configuration
+  systemd:
+    daemon_reload: true
+
+- name: Enable Docker service
+  systemd:
+    name: docker
+    enabled: true
+
+- name: Start Docker service
+  systemd:
+    name: docker
+    state: started
+
+- name: Add user to Docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+
+- name: Change docker socket permissions
+  file:
+    path: /var/run/docker.sock
+    mode: '0666'
+
+- name: Get Docker information
+  command: docker info
+  register: result
+
+- name: Show Docker info result
+  debug:
+    msg: "{{ result.stdout }}"
+
+- name: "Creating nexus directory..."
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{install_shell_dir}}'

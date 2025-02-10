@@ -1,0 +1,82 @@
+############################# rootCA 생성
+# - name: create ssl rootCA directory
+#   file:
+#     path: "../files/ssl_cert/"
+#     state: directory
+
+# - name: configure rootCA template - rootCA-config.j2
+#   template:
+#     src: ./templates/ssl_cert/rootCA-config.j2
+#     dest: "../files/ssl_cert/rootCA-config.json"
+#     mode: 0664
+
+# - name: configure rootCA template - rootCA-csr.j2
+#   template:
+#     src: ./templates/ssl_cert/rootCA-csr.j2
+#     dest: "../files/ssl_cert/rootCA-csr.json"
+#     mode: 0664
+
+# - name: self sign rootCA
+#   shell: cd ../files/ssl_cert/; cfssl gencert -initca rootCA-csr.json | cfssljson -bare rootCA
+
+############################# gitlab
+- name: configure gitlab template
+  template:
+    src: ./templates/ssl_cert/gitlab_cert.j2
+    dest: "../files/ssl_cert/gitlab-csr.json"
+    mode: 0664
+  when: gitlab_ssl == true
+
+- name: self sign gitlab
+  shell: cd ../files/ssl_cert/; cfssl gencert \ -ca=rootCA.pem \ -ca-key=rootCA-key.pem \ -config=rootCA-config.json \ -profile=root-ca \ gitlab-csr.json | cfssljson -bare gitlab
+  when: gitlab_ssl == true
+
+- name: create ssl gitlab directory
+  file:
+    path: "../files/ssl_cert/gitlab"
+    state: directory
+  when: gitlab_ssl == true
+
+- name: move gitlab cert
+  shell: cd ../files/ssl_cert/; mv ./gitlab.pem ./gitlab/{{gitlab_host}}.crt
+  when: gitlab_ssl == true
+
+- name: move gitlab key
+  shell: cd ../files/ssl_cert/; mv ./gitlab-key.pem ./gitlab/{{gitlab_host}}.key
+  when: gitlab_ssl == true
+
+############################### harbor
+
+- name: configure harbor template
+  template:
+    src: ./templates/ssl_cert/harbor_cert.j2
+    dest: "../files/ssl_cert/harbor-csr.json"
+    mode: 0664
+  when: harbor_ssl == true
+
+- name: self sign harbor
+  shell: cd ../files/ssl_cert/; cfssl gencert \ -ca=rootCA.pem \ -ca-key=rootCA-key.pem \ -config=rootCA-config.json \ -profile=root-ca \ harbor-csr.json | cfssljson -bare harbor
+  when: harbor_ssl == true
+  
+- name: create ssl harbor directory
+  file:
+    path: "../files/ssl_cert/harbor"
+    state: directory
+  when: harbor_ssl == true
+
+- name: move harbor cert
+  shell: cd ../files/ssl_cert/; mv ./harbor.pem ./harbor/
+  when: harbor_ssl == true
+
+- name: move harbor key
+  shell: cd ../files/ssl_cert/; mv ./harbor-key.pem ./harbor/
+  when: harbor_ssl == true
+
+####################################### nginx
+
+- name: Update file owner
+  become: yes
+  shell: chown -R 1000:1000 ../files/ssl_cert/
+
+
+  

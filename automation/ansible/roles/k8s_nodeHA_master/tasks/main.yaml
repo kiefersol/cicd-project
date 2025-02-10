@@ -1,0 +1,30 @@
+--- 
+#node-monitor-period : node controller에서 node status를 동기화하는 시간
+- name: setting node-monitor-period
+  shell: sed -i'' -r -e "/- --allocate-node-cidrs=true/i\    - --node-monitor-period={{node_monitor_period_second}}s" /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+#node-monitor-grace-period : node로부터 해당 시간 동안 응답을 받지 못한 경우 상태를 Not Ready 상태로 변경
+- name: seeting node-monitor-grace-period
+  shell: sed -i'' -r -e "/- --allocate-node-cidrs=true/i\    - --node-monitor-grace-period={{node_monitor_grace_period_second}}s" /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+# default-not-ready-toleration-seconds , default-unreachable-toleration-seconds 
+# toleration 지정되지 않은 Pod에 toleration을 적용하기 위한 toleration Seconds
+
+- name: Resolving Home Dir
+  become: no
+  shell: echo $HOME
+  register: home_dir
+
+- name: configure output template
+  template:
+    src: "./templates/install_k8s/kubeadm-apiserver-update.yaml.j2"
+    dest: '{{home_dir.stdout_lines[0]}}/kubeadm-apiserver-update.yaml'
+
+- name : kubeadm update
+  shell: kubeadm init phase control-plane apiserver --config={{home_dir.stdout_lines[0]}}/kubeadm-apiserver-update.yaml
+
+- name : update svc cidr1 
+  shell: sed -i "/--service-cluster-ip-range=/d" /etc/kubernetes/manifests/kube-apiserver.yaml
+
+- name : update svc cidr2
+  shell: sed -i'' -r -e "/--tls-cert-file/i\    - --service-cluster-ip-range={{kubernetes_service_cidr}}" /etc/kubernetes/manifests/kube-apiserver.yaml

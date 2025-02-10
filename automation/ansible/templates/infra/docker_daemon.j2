@@ -1,0 +1,15 @@
+{ 
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "{{docker_log_max_size}}",
+    "max-file": "{{docker_log_max_file}}"
+  },
+  "storage-driver": "overlay2",
+  "bip": "{{docker_bip}}",
+  "data-root": "{{docker_root_dir}}",
+  "default-address-pools":
+  [    
+    {"base":"{{docker_pools_base}}","size":24}
+  ]
+}

@@ -1,0 +1,9 @@
+---
+- name: install sonarqube
+  hosts: sonarqube
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - sonarqube

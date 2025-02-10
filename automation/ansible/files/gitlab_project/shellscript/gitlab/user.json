@@ -1,0 +1,8 @@
+{
+    "username": "[GITLAB_USERNAME]",
+    "password": "[GITLAB_PASSWORD]",
+    "name": "[GITLAB_USERNAME]",
+    "email": "[GITLAB_USER_EMAIL]",
+    "skip_confirmation": "true",
+    "note": "created automatically by sol"
+}

@@ -1,0 +1,104 @@
+---
+- name: hostname1
+  shell: hostname
+  delegate_to: "{{ groups['master'][0] }}"
+  register: hostname1
+
+# - name: hostname2
+#   command: hostname
+#   delegate_to: "{{ groups['master'][1] }}"
+#   register: hostname2
+#   when: k8s_multi_master == true
+
+# - name: hostname3
+#   command: hostname
+#   delegate_to: "{{ groups['master'][2] }}"
+#   register: hostname3
+#   when: k8s_multi_master == true
+
+# - name : running create.sh
+#   connection: local
+#   shell: "../files/k8s_cert/create.sh create"
+#   environment:
+#     LB_IP : "{{k8s_api_ip}}"
+#     MASTER_HOST : "{{hostname1.stdout}}"
+#     MASTER_IP : "{{master_ip}}"
+#     K8S_IP : "{{k8s_cert_svc_ip}}"
+#     K8S_API : "https://{{k8s_api_ip}}:{{k8s_api_port}}"
+#     ALL_HOST : "{{hostname1.stdout}}"    
+#   register: installing
+#   when: k8s_multi_master == false
+# - debug: var=installing
+
+# - name : running create.sh
+#   connection: local
+#   shell: "../files/k8s_cert/create.sh create"
+#   environment:
+#     LB_IP : "{{k8s_api_ip}}"
+#     MASTER_HOST : "{{hostname1.stdout}},{{hostname2.stdout}},{{hostname3.stdout}}"
+#     MASTER_IP : "{{master_ip}}"
+#     K8S_IP : "{{k8s_cert_svc_ip}}"
+#     K8S_API : "https://{{k8s_api_ip}}:{{k8s_api_port}}"
+#     ALL_HOST : "{{hostname1.stdout}}"    
+#   register: installing
+#   when: k8s_multi_master == true
+# - debug: var=installing
+
+# - name: Copy Ansible kubernetes cert directory to remote /etc
+#   copy:
+#     src: ../files/k8s_cert/kubernetes
+#     dest: "/etc"
+
+- name: Resolving Home Dir
+  become: no
+  shell: echo $HOME
+  register: home_dir
+
+- name: insert variable
+  set_fact:
+    node_name: "{{hostname1.stdout}}"
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: configure output template
+  template:
+    src: "./templates/install_k8s/k8s_master_aws.j2"
+    dest: '{{home_dir.stdout_lines[0]}}/master.yaml'
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: configure output template
+  template:
+    src: "./templates/install_k8s/k8s_master_private.j2"
+    dest: '{{home_dir.stdout_lines[0]}}/master.yaml'
+  when: '"{{cloud_provider}}" == "private"'
+
+- name: Kubeadm init
+  command: kubeadm init --config '{{home_dir.stdout_lines[0]}}/master.yaml'
+  register: rslt
+- debug: var=rslt
+
+- name: make directory .kube/config  
+  shell: mkdir -p '{{home_dir.stdout_lines[0]}}'/.kube
+
+- name: Copy admin.conf to .kube folder
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{home_dir.stdout_lines[0]}}/.kube/config"
+    remote_src: yes
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+
+- name: Update file owner
+  shell: chown {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} '{{home_dir.stdout_lines[0]}}'/.kube/config
+  register: result
+
+- name: Copy config file
+  fetch:
+    src: "{{home_dir.stdout_lines[0]}}/.kube/config"
+    dest: "{{kube_config}}"
+    flat: yes
+    
+
+

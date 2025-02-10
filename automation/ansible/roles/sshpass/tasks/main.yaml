@@ -1,0 +1,7 @@
+--- 
+# sshpass 설치
+- name: rpm sshpass install
+  yum:
+    name: sshpass
+    state: present
+  when: ansible_distribution == "CentOS"

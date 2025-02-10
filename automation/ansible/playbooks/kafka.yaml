@@ -1,0 +1,8 @@
+---
+- name: install kafka for bxcm
+  hosts: kafka
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - kafka

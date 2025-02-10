@@ -1,0 +1,41 @@
+---
+- name: Find token command
+  command: kubeadm token create --print-join-command
+  delegate_to: "{{ groups['master'][0] }}"
+  register: token_body
+- debug: var=token_body.stdout_lines[0]
+
+- name: Join worker into the master
+  become: yes
+  command: "{{token_body.stdout_lines[0]}}"
+  register: check
+- debug: var=certificate_key.stdout_lines[2]
+
+- name: Resolving Home Dir
+  become: no
+  shell: echo $HOME
+  register: home_dir
+- debug: var=home_dir
+
+- name: make directory .kube/config  
+  shell: mkdir -p '{{home_dir.stdout_lines[0]}}'/.kube
+
+- name: Copy the config file to workload  
+  copy:
+    src: "{{kube_config}}"
+    dest: "{{home_dir.stdout_lines[0]}}/.kube/config"
+    mode: 0600
+
+- name: Get group id
+  become: no
+  shell: id -u; id -g;
+  register: account_id
+- debug: var=account_id
+
+- name: Update file owner
+  shell: chown {{account_id.stdout_lines[0]}}:{{account_id.stdout_lines[1]}} '{{home_dir.stdout_lines[0]}}'/.kube/config
+  register: result
+- debug: var=result
+
+
+

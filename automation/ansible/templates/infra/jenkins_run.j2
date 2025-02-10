@@ -1,0 +1,11 @@
+docker run -it -d --name jenkins \
+-p {{jenkins_port}}:8080 -p {{jenkins_agent_port}}:50000 \
+-v {{jenkins_base_dir}}:/var/jenkins_home \
+-v /var/run/docker.sock:/var/run/docker.sock \
+--env JAVA_OPTS=-Dhudson.security.csrf.GlobalCrumbIssuerConfiguration.DISABLE_CSRF_PROTECTION=true \
+--memory={{jenkins_memory}} \
+-v /bin/docker:/bin/docker \
+-v /etc/hosts:/etc/hosts \
+-v /etc/localtime:/etc/localtime:ro  \
+-v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro \
+{{jenkins_image}}

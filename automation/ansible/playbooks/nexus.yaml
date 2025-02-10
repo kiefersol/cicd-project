@@ -1,0 +1,8 @@
+---
+- name: install nexus
+  hosts: nexus
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - nexus

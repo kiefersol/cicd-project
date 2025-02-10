@@ -1,0 +1,8 @@
+docker run -d --name sonar-mysql -p  {{sonarqube_mysql_port}}:3306 \
+-v {{sonarqube_mysql_dir}}:/var/lib/mysql \
+-e MYSQL_USER={{sonarqube_mysq_user}} \
+-e MYSQL_PASSWORD={{sonarqube_mysq_password}} \
+-e MYSQL_DATABASE={{sonarqube_mysql_database}} \
+-e MYSQL_ROOT_PASSWORD={{sonarqube_mysq_root_password}} \
+{{sonarqube_mysql_image}} \
+--character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci

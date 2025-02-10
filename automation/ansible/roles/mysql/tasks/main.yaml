@@ -1,0 +1,32 @@
+---
+# infra node에서 docker container로 mysql 설치
+- name: create directory
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{mysql_dir}}'
+
+- name: insert variable
+  set_fact:
+    mysql_dir: "{{mysql_dir}}"
+    mysql_port: "{{mysql_port}}"
+    mysql_user: "mysql"
+    mysql_password: "mysql"
+    mysql_database: "mysql"
+    mysql_root_password: "mysql"
+    mysql_image: "docker.io/library/mysql:5.7"
+
+- name: configure output template
+  template:
+    src: "../templates/infra/mysql_run.j2"
+    dest: {{install_shell_dir}}/mysql_docker.sh
+
+- name: give permission to output file
+  shell: chmod 755 {{install_shell_dir}}/mysql_docker.sh
+  args:
+    warn: false
+
+- name: mysql container
+  shell: {{install_shell_dir}}/mysql_docker.sh

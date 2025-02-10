@@ -1,0 +1,14 @@
+# jumpbox IP에 대한 공개 키를 가져와서 ~/.ssh/known_hosts에 저장
+# ansible 작업 서버에서 jumpbox에 ssh로 접근할 때, 연결 대상 서버의 신뢰성을 검증하기 위해 경고 메세지를 보내는 것을 방지
+
+- name: ssh-keyscan for known-hosts
+  command: /usr/bin/ssh-keyscan -t ecdsa {{ jumpbox_ip }}
+  register: keyscan
+
+- name: input key
+  lineinfile:
+    path: ~/.ssh/known_hosts
+    line: "{{item}}"
+    create: yes
+  with_items:
+    - "{{keyscan.stdout_lines}}"

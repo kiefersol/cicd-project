@@ -1,0 +1,32 @@
+docker network create gitlab-network
+docker run --detach \
+  --hostname '{{gitlab_host}}' \
+  --env GITLAB_OMNIBUS_CONFIG="\
+    external_url 'https://{{gitlab_external_url}}'; \
+    gitlab_rails['initial_root_password'] = '{{gitlab_password}}'; \
+{% if gitlab_ssl %}
+    letsencrypt['enable'] = false; \
+{% endif %}
+    registry['enable'] = false; \
+    prometheus['enable'] = false; \
+    alertmanager['enable'] = false; \
+    node_exporter['enable'] = false; \
+    redis_exporter['enable'] = false; \
+    postgres_exporter['enable'] = false; \
+    gitlab_exporter['enable'] = false; \
+    prometheus_monitoring['enable'] = false; \
+    grafana['reporting_enabled'] = false; \
+    gitlab_kas['enable'] = false; \
+    sentinel['enable'] = false; \
+    "\
+  --publish {{ansible_host}}:{{gitlab_port}}:{{gitlab_port}} \
+  --name gitlab \
+  --network gitlab-network \
+  --memory={{gitlab_memory}} \
+  --cpus={{gitlab_cpu}} \
+  --volume {{gitlab_config_dir}}:/etc/gitlab \
+  --volume {{gitlab_log_dir}}:/var/log/gitlab \
+  --volume {{gitlab_data_dir}}:/var/opt/gitlab \
+  -v /etc/localtime:/etc/localtime:ro \
+  -v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro \
+  {{gitlab_image}}

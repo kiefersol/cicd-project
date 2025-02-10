@@ -1,0 +1,22 @@
+#!/bin/bash
+export GITLAB_URL={{gitlab_external_url}}
+export FW_NAMESPACE="sol"
+
+BASEDIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+echo $BASEDIR
+
+cd ${BASEDIR}/shellscript/gitlab
+
+if [ $(curl --connect-timeout 600 -k -I "https://{{gitlab_external_url}}" 2>/dev/null | head -n 1 | cut -d$' ' -f2) -eq "302" ];
+then  
+  personal_access_token=$(./token --username '{{gitlab_root_username}}' --password '{{gitlab_password}}' --base-url https://${GITLAB_URL}) 
+  GITLAB_TOKEN_DIR="${BASEDIR}/shellscript/generated/tokens"
+  GITLAB_TOKEN_FILE="${GITLAB_TOKEN_DIR}/gitlab_token"
+  echo "export GITLAB_TOKEN=\"${personal_access_token}\"" > ${GITLAB_TOKEN_FILE}
+  cat ${GITLAB_TOKEN_FILE}
+  source ../generated/tokens/gitlab_token
+  ./create-group.sh bookinfo
+else
+  echo gitlab is not working
+  exit 1
+fi
