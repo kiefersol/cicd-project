@@ -1,0 +1,9 @@
+---
+- name: install kubectl, kubeadm, kubelet
+  hosts: master, worker
+  become: yes
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - k8s_install

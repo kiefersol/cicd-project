@@ -14,20 +14,20 @@
 #   become: yes
 #   shell: rm /etc/kubernetes/kubelet.conf
 
-- name: Find token command - awsX
+- name: Find token command 
   command: kubeadm token create --print-join-command
   delegate_to: "{{ groups['master'][0] }}"
   register: token_body
   when: '"{{cloud_provider}}" != "manual"'
 
-- name: Generate new certificate-key - awsX
+- name: Generate new certificate-key 
   become: yes
   command: kubeadm init phase upload-certs --upload-certs
   delegate_to: "{{ groups['master'][0] }}"
   register: certificate_key
   when: '"{{cloud_provider}}" != "manual"'
 
-- name: Join sub master into the main master - awsX
+- name: Join sub master into the main master - 
   become: yes
   command: "{{token_body.stdout_lines[0]}} --control-plane --certificate-key {{certificate_key.stdout_lines[2]}}"
   register: check

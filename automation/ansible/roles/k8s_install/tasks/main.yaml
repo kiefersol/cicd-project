@@ -1,0 +1,137 @@
+---
+- name: Set hostname
+  shell: hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Kubernetes 저장소 추가
+  shell: |
+    cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+    [kubernetes]
+    name=Kubernetes
+    baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled=1
+    gpgcheck=1
+    repo_gpgcheck=1
+    gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    EOF
+
+- name: Kubernetes 패키지 설치 (kubeadm, kubelet, kubectl) - YUM 사용
+  yum:
+    name:
+#      - libselinux-utils
+      - kubelet-{{kubernetes_version}}
+      - kubeadm-{{kubernetes_version}}
+      - kubectl-{{kubernetes_version}}
+    state: present
+    disable_excludes: kubernetes
+  
+- name: Set SELinux in permissive mode-1
+  command: "setenforce 0"
+  ignore_errors : true
+
+- name: Set SELinux in permissive mode-2
+  command: "sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config"
+
+- name: Disable swap
+  shell: swapoff -a 
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  with_items:
+    - swap
+    - none
+
+- name: Create a empty file /etc/modules-load.d/k8s.conf
+  copy:
+    content: ""
+    dest: /etc/modules-load.d/k8s.conf
+    force: no
+
+- name: Configure sysctl params for Kubernetes.
+  lineinfile:
+    path: /etc/modules-load.d/k8s.conf 
+    line: "{{ item }}"
+  with_items:
+   - 'br_netfilter'
+
+- name: Ensure br_netfilter is enabled.
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Create a empty file /etc/sysctl.d/k8s.conf
+  copy:
+    content: ""
+    dest: /etc/sysctl.d/k8s.conf
+    force: no
+
+- name: Configure sysctl params for Kubernetes.
+  lineinfile:
+    path: /etc/sysctl.d/k8s.conf 
+    line: "{{ item }}"
+  with_items:
+   - 'net.bridge.bridge-nf-call-iptables  = 1'
+   - 'net.bridge.bridge-nf-call-ip6tables = 1'
+
+- name: Letting iptables see bridged traffic
+  sysctl:
+    name: "{{ item }}"
+    value: '1'
+    state: present
+  loop:
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+
+- name: Apply sysctl params without reboot.
+  command: sysctl --system
+
+- name: input kubelet configuration
+  lineinfile:
+    path: /var/lib/kubelet/config.yaml
+    line: "{{item}}"
+    create: yes
+  with_items:
+    - "containerLogMaxSize: {{kubelet_containerLogMaxSize}}"
+    - "containerLogMaxFiles: {{kubelet_containerLogMaxFiles}}"
+
+- name: sed3
+  shell: sed -e '5 i\Environment="KUBELET_EXTRA_ARGS=--cgroup-driver=systemd' -i /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+  when: ansible_os_family == "RedHat"
+  
+- name: Resolving Home Dir
+  become: no
+  shell: echo $HOME
+  register: home_dir
+
+- name: create directory
+  become: no
+  file:
+    path: "{{home_dir.stdout_lines[0]}}/.kube"
+    state: directory
+
+- name: input hosts - harbor, gitlab
+  lineinfile:
+    path: /etc/hosts
+    line: "{{infra_ip}} {{item}}"
+    create: yes
+  with_items:
+    - "gitlab.sol.lab"
+    - "registry.sol.lab"
+
+- name: daemon-reload
+  shell: "systemctl daemon-reload"
+
+- name: restart kubelet
+  shell: "systemctl restart kubelet.service"
+
+- name: enable kubelet
+  shell: "systemctl enable kubelet.service"
+
+- name: truncate machine-id
+  shell: truncate -s 0 /etc/machine-id
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
