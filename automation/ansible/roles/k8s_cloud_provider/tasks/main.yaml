@@ -1,0 +1,24 @@
+---
+- name: Check k8s version
+  shell: "kubectl version | tr ' ' '\n' | grep Minor | tr -d 'Minor:' | tr -d '\"' | tr -d ',' | cut -c 1-2"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: k8s_version
+
+- name: insert variable
+  set_fact:
+    kubernetes_version: "{{ k8s_version.stdout_lines[1] }}"
+
+- name: configure template
+  template:
+    src: "./templates/k8s_component/aws_cloud_provider.j2"
+    dest: "../files/k8s_cloud_provider/aws-cloud-controller-manager.yaml"
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: deploy aws-cloud-controller-manager-daemonset.yaml
+  shell: "kubectl apply -k ../files/k8s_cloud_provider/aws-cloud-controller-manager.yaml"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+
