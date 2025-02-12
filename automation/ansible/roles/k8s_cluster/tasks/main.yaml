@@ -1,0 +1,155 @@
+---
+# ######################################### aws eks cluster
+
+- name: make aws kubeconfig directory 
+  file:
+    path: "~/.kube"
+    state: directory
+  when: '"{{cloud_provider}}" == "eks"'
+
+# Terraform에서 <<EOT ... EOT 같은 HEREDOC 형식으로 출력된 경우, "EOT" 문자열이 남아 있을 수 있는데 이를 제거
+- name: make k8s config file
+  shell: cd ../../terraform/aws/; terraform output kubeconfig > {{kube_config}}; sed -i '/EOT/d' /root/.kube/{{kube_config}}
+  when: '"{{cloud_provider}}" == "eks"'
+
+## aws 명령어 없으면 "/ansible/files/cloud_tool/aws/install -i /usr/local/aws-cli -b /usr/local/bin" 명령어 실행시켜 aws-cli 설치
+- name: make k8s config file
+  shell: aws eks --region {{region_name}} update-kubeconfig --name {{vpc_name}}-{{system_type}}
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: make aws iam file directoy 
+  file:
+    path: "/root/bin"
+    state: directory
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: Copy iam file
+  copy:
+    src: ../files/cloud_tool/aws-iam-authenticator
+    dest: /root/bin/
+    mode: '0755'
+  when: '"{{cloud_provider}}" == "eks"'
+
+### install helm 
+- name: set helm version and install helm
+  shell: DESIRED_VERSION=v3.7.0 /ansible/files/helm/get_helm.sh
+
+### for aws-load-balancer-controller
+# - name: add help eks repository
+#   shell: helm repo add eks https://aws.github.io/eks-charts 
+#   when: '"{{cloud_provider}}" == "aws"'
+
+# - name: k8s aws-load-balancer-controller
+#   shell: kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+#   environment:
+#     PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+#     KUBECONFIG: "{{kube_config}}"
+#   when: '"{{cloud_provider}}" == "aws"'
+
+# - name: helm install aws-load-balancer-controller
+#   shell: helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=bxcp-dev-eks --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer
+#   ignore_errors: yes
+#   when: '"{{cloud_provider}}" == "aws"'
+
+# kubernetes certification - manual만
+- name : apply kubelet-csr-approver directory *.yaml
+  connection: local
+  shell: "/ansible/files/k8s_cert/kubelet-csr-approver/create.sh"  
+  environment:
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - private
+    - awsM
+    - ncloudM
+- debug: var=installing
+
+# setting master node labels
+- name: Get master node name
+  shell: kubectl get nodes -A | grep control-plane | awk '{print $1}'
+  register: master_name
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+- debug: var=master_name
+
+- name: Get master node name
+  shell: kubectl get nodes -A | awk '{print $1}'
+  register: worker_name
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+
+- name: Add label to master node for cluster autoscaler
+  shell: kubectl label nodes {{master_name.stdout_lines[0]}} kubernetes.io/role=master
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manul
+
+- name: Add label to master node 
+  shell: kubectl label nodes {{worker_name.stdout_lines[1]}} kubernetes.io/role=master
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+
+# metric server
+- name: install metric server
+  shell: 'kubectl apply -f /ansible/files/k8s_metric_server/k8s_metric_server_cloud.yaml'
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+
+- name: install metric server
+  shell: 'kubectl apply -f /ansible/files/k8s_metric_server/k8s_metric_server_manual.yaml'
+  environment:
+    NCLOUD_PROFILE : "{{vpc_name}}-{{system_type}}"
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
+
+################################### aws Autoscaler - AWS
+- name: insert variable
+  connection: local
+  set_fact:
+    vpc_name: "{{vpc_name}}"
+    system_type: "{{system_type}}"
+    k8s_cluster_version: "{{k8s_cluster_autoscaler_version}}"
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: configure output template
+  connection: local
+  template:
+    src: "/ansible/templates/k8s_component/aws/cluster-autoscaler-autodiscover.j2"
+    dest: "/ansible/files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml"
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: deploy aws kubernetes auto scaler
+  connection: local
+  shell: kubectl apply -f /ansible/files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "eks"'
+
+
