@@ -1,0 +1,11 @@
+---
+- name: update kubernetes config file
+  hosts: localhost
+  become: yes
+  connection: local
+  serial: 1
+  gather_facts: no  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_config

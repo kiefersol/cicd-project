@@ -1,0 +1,63 @@
+---
+# aws-iam-authenticator을 사용하지 않는 kube-config 만들기
+- name: create kubeconfig-sa serviceaccount
+  shell: kubectl -n kube-system create serviceaccount kubeconfig-sa
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+- debug: var=installing
+
+- name: create add-on-cluster-admin clusterrolebinding
+  shell: kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:kubeconfig-sa
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+- debug: var=installing
+
+- name: Get kubeconfig-sa serviceaccount token name
+  shell: kubectl -n kube-system get serviceaccount/kubeconfig-sa -o jsonpath='{.metadata.name}'
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  register: token_name
+
+- name: apply secret from kubeconfig service account 
+  shell: kubectl create -f ./files/k8s_config/kubeconfig-sa_secret.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name: Get secret token from kubeconfig service account 
+  shell: kubectl -n kube-system get secret {{token_name.stdout}} -o jsonpath='{.data.token}'| base64 --decode
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  register: token
+
+- name: add kube config file
+  shell: kubectl config set-credentials kubeconfig-sa --token={{token.stdout}}
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+
+- name: set k8s config file 
+  shell: kubectl config set-context --current --user=kubeconfig-sa
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name: edit kube config file
+  shell: "rm {{kube_config}}1"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  ignore_errors : true
+
+- name: edit kube config file
+  shell: "sed '39,54d' {{kube_config}} >> {{kube_config}}1"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+  when: '"{{cloud_provider}}" == "eks"'
