@@ -1,0 +1,9 @@
+---
+- name: Setting for kubernetes autoscaler - eks, manual
+  hosts: localhost
+  become: yes
+  connection: local
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_autoscaler

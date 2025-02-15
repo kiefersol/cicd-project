@@ -114,25 +114,4 @@
     - manual
     - private
 
-################################### aws Autoscaler - AWS
-- name: insert variable
-  set_fact:
-    vpc_name: "{{vpc_name}}"
-    system_type: "{{system_type}}"
-    k8s_cluster_version: "{{k8s_cluster_autoscaler_version}}"
-  when: '"{{cloud_provider}}" == "eks"'
-
-- name: configure output template
-  template:
-    src: "./templates/k8s_component/aws/cluster-autoscaler-autodiscover.j2"
-    dest: "../files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml"
-  when: '"{{cloud_provider}}" == "eks"'
-
-- name: deploy aws kubernetes auto scaler
-  shell: kubectl apply -f ../files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml
-  environment:
-    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
-    KUBECONFIG: "{{kube_config}}"
-  when: '"{{cloud_provider}}" == "eks"'
-
 

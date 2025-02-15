@@ -1,0 +1,59 @@
+---
+################################### aws Autoscaler - eks
+- name: insert variable
+  set_fact:
+    vpc_name: "{{vpc_name}}"
+    system_type: "{{system_type}}"
+    k8s_cluster_version: "{{k8s_cluster_autoscaler_version}}"
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: configure output template
+  template:
+    src: "./templates/k8s_component/cluster-autoscaler-autodiscover.j2"
+    dest: "../files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml"
+  when: '"{{cloud_provider}}" == "eks"'
+
+- name: deploy aws kubernetes auto scaler
+  shell: kubectl apply -f ../files/k8s_auto_scaler/cluster-autoscaler-autodiscover.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "eks"'
+
+################################### aws Autoscaler - manual
+
+- name: configure output template
+  template:
+   src: "./templates/k8s_component/aws_secret.j2"
+   dest: ../files/k8s_auto_scaler/aws-secret.yaml
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: Kubernetes Apply AWS Secret
+  shell: kubectl apply -f ../files/k8s_auto_scaler/aws-secret.yaml
+  environment:
+   KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: insert variable
+  set_fact:
+    vpc_name: "{{vpc_name}}"
+    system_type: "{{system_type}}"
+    k8s_cluster_autoscaler_version: "{{k8s_cluster_autoscaler_version}}"
+    asg_min_size: "{{asg_min_size}}"
+    asg_max_size: "{{asg_max_size}}"
+  when: '"{{cloud_provider}}" == "manual"'
+
+- name: configure output template redhat
+  template:
+    src: "./templates/k8s_component/aws/cluster-autoscaler-run-on-control-plane-redhat.j2"
+    dest: "../files/k8s_auto_scaler/cluster-autoscaler-run-on-control-plane.yaml"
+  when: 
+    - '"{{cloud_provider}}" == "manual"
+
+- name: deploy aws kubernetes manual auto scaler
+  shell: kubectl apply -f ../files/k8s_auto_scaler/cluster-autoscaler-run-on-control-plane.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "manual"'
+

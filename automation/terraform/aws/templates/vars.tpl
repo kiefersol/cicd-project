@@ -100,7 +100,7 @@ kubernetes_version : ${k8s_version}
 kubernetes_pod_cidr : ${k8s_pod_cidr}
 kubernetes_service_cidr : ${k8s_service_cidr}
 kubernetes_service_type : ${k8s_service_type}
-k8s_cluster_autoscaler_version : 1.24
+k8s_cluster_autoscaler_version : 1.30
 
 k8s_api_ip : "{{k8s_lb_domain}}"  # ip 수정
 k8s_api_port : 6443
