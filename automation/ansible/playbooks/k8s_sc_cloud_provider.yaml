@@ -1,0 +1,9 @@
+---
+- name: install k8s storage class with cloud provider
+  hosts: localhost
+  become: no
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - k8s_sc_cloud_provider

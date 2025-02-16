@@ -1,0 +1,54 @@
+---
+- name: make aws-secret for aws ebs csi
+  shell: kubectl create secret generic aws-secret --namespace kube-system --from-literal "key_id={{access_key}}" --from-literal "access_key={{secret_key}}"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"    
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+    - manual
+
+- name: create k8s ebs csi driver
+  shell: kubectl apply -k "../files/k8s_sc_aws/aws-ebs-csi-driver/deploy/kubernetes/base"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"    
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+    - manual
+
+- name: configure aws storage class yaml
+  template:
+    src: ./templates/k8s_component/aws_sc.j2
+    dest: ../files/k8s_sc_aws/aws_sc.yaml
+    mode: 0755
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+    - manual
+
+- name: deploy aws storage class yaml
+  shell: kubectl apply -f ../files/k8s_sc_aws/aws_sc.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+    - manual
+
+- name: deploy aws storage class yaml
+  shell: kubectl apply -f ../files/k8s_sc_aws/gp2.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
+
+
+
+
+ 
