@@ -1,0 +1,40 @@
+---    
+- name: configure k8s efs deployment template
+  template:
+    src: ./templates/k8s_component/efs-deployment.j2
+    dest: "../files/k8s_sc_nfs/efs/efs-deployment.yaml"
+    mode: 0755
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
+    - eks
+
+- name: configure k8s efs pv template
+  template:
+    src: ./templates/k8s_component/efs-pvc.j2
+    dest: "../files/k8s_sc_nfs/efs/efs-pvc.yaml"
+    mode: 0755
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
+    - eks
+
+- name: configure k8s efs storageclass template
+  template:
+    src: ./templates/k8s_component/efs-storageclass.j2
+    dest: "../files/k8s_sc_nfs/efs/efs-storageclass.yaml"
+    mode: 0755
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
+    - eks
+
+- name: deploy efs storageclass component
+  shell: kubectl apply -f ../files/k8s_sc_nfs/efs/
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"    
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - manual
+    - eks
