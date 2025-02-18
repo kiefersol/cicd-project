@@ -1,0 +1,17 @@
+---     
+- name: create directory
+  file:
+    path: "{{nfs_path}}"
+    state: directory
+
+- name: chmod nfs directory
+  shell: "chmod -R 777 {{nfs_path}}"
+
+- name: set exports file
+  lineinfile:
+    path: /etc/exports
+    line: "{{nfs_path}} *(rw,sync,no_subtree_check,no_root_squash)"
+    create: yes
+
+- name: exportfs -r
+  shell: "exportfs -r"

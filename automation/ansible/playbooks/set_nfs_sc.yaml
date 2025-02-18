@@ -1,0 +1,9 @@
+---
+- name: setting nas server in infra node
+  hosts: nas
+  become: yes  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - set_nfs_sc
