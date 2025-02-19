@@ -16,13 +16,13 @@ kafka_ip : "{{infra_lb_domain}}"
 harbor_ip : "{{infra_lb_domain}}"
 gitlab_ip :  "{{infra_lb_domain}}"
 
-nfs_path: ${nas_path}:/
+nfs_path: ${nas_path}
 nfs_name: ${nas_name}
 nfs_dns: ${nas_dns}
 nas_mount_path: "${nas_mount_path}"
 
-nfs_server: ${nas_path}
-nfs_mountoptions: nfsvers=4.1
+nfs_server: ${nas_server}
+nfs_mountoptions: nfsvers=${nas_mountoptions}
 nfs_pvc_name: solpv
 
 ec2_ebs_mount_path : "/app"

@@ -12,7 +12,7 @@ subnet_private_cidr = ["10.0.2.0/24"]
 nat_install         = true
 
 # nas
-nas_install                 = false
+nas_install                 = true
 nas_infra_access_point      = "/mnt/nfs"
 nas_kubernetes_access_point = "/"
 

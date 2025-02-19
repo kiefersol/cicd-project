@@ -13,6 +13,16 @@ variable "nas_path" {
   type        = string
 }
 
+variable "nas_server" {
+  description = "nas server"
+  type        = string
+}
+
+variable "nas_mountoptions" {
+  description = "nas mountoptions"
+  type        = string
+}
+
 variable "nas_name" {
   description = "nas name"
   type        = string

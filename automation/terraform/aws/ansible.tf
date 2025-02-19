@@ -17,10 +17,12 @@ module "vars" {
   count                = var.k8s_manual_install ? 1 : 0
   template_file        = var.ansible_vars
   cloud_provider       = var.k8s_manual_install ? "manual" : "eks"
-  nas_path             = var.nas_install ? module.sol_efs_mount_target[0].efs_mount_target_info.ip_address : ""
+  nas_server           = var.nas_install ? module.sol_efs_mount_target[0].efs_mount_target_info.ip_address : module.sol_infra_node[0].ec2_info.private_ip
+  nas_path             = var.nas_install ? join("", [module.sol_efs_mount_target[0].efs_mount_target_info.ip_address, ":/"]) : "/home/sol/nfs"
   nas_name             = var.nas_install ? module.sol_efs[0].efs_info.id : ""
   nas_dns              = var.nas_install ? module.sol_efs[0].efs_info.dns_name : ""
   nas_mount_path       = var.nas_install ? var.nas_infra_access_point : ""
+  nas_mountoptions     = var.nas_install ? "4.1" : "4"
   region               = var.region
   access_key           = var.access_key
   secret_key           = var.secret_key

@@ -3,9 +3,11 @@ resource "local_file" "ansible_manual_vars" {
     {
       cloud_provider       = var.cloud_provider
       nas_path             = var.nas_path
+      nas_server           = var.nas_server
       nas_name             = var.nas_name
       nas_dns              = var.nas_dns
       nas_mount_path       = var.nas_mount_path
+      nas_mountoptions     = var.nas_mountoptions
       region               = var.region
       access_key           = var.access_key
       secret_key           = var.secret_key
