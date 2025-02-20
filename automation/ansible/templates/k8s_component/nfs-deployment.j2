@@ -1,0 +1,45 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: nfs-client-provisioner
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      tolerations:
+        - effect: NoSchedule
+          operator: "Exists"
+          key: node-role.kubernetes.io/master
+        - effect: NoSchedule
+          operator: "Exists"
+          key: node-role.kubernetes.io/control-plane
+      nodeSelector:
+        kubernetes.io/role: master 
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.1
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: sol.cicd-project.io/nfs-provisioner
+            - name: NFS_SERVER
+              value: {{nfs_server}}
+            - name: NFS_PATH
+              value: {{nfs_path}}
+      volumes:
+        - name: nfs-client-root
+          persistentVolumeClaim:
+            claimName: pvc-{{nfs_pvc_name}}

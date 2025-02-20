@@ -1,0 +1,26 @@
+---    
+- name: configure k8s nfs deployment template
+  template:
+    src: ./templates/k8s_component/nfs-deployment.j2
+    dest: "../files/k8s_sc_nfs/nfs/nfs-deployment.yaml"
+    mode: 0755
+
+- name: configure k8s nfs pv template
+  template:
+    src: ./templates/k8s_component/nfs-pv.j2
+    dest: "../files/k8s_sc_nfs/nfs/nfs-pv.yaml"
+    mode: 0755
+
+- name: configure k8s nfs storageclass template
+  template:
+    src: ./templates/k8s_component/nfs-storageclass_default.j2
+    dest: "../files/k8s_sc_nfs/nfs/nfs-storageclass.yaml"
+    mode: 0755
+
+- name: deploy nfs storageclass component
+  shell: kubectl apply -f ../files/k8s_sc_nfs/nfs/
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"    
+
+
