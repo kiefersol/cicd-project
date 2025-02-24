@@ -1,0 +1,41 @@
+---
+- name: make flux namespace 
+  shell: kubectl create namespace flux
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name: nslookup infra lb ip
+  connection: local
+  shell: "nslookup {{infra_lb_domain}} | grep Address | tail -1 | tr ':' '\n' | tail -1 | sed 's/^ *//'"
+  register: lb_ip
+  ignore_errors: yes
+
+- name: create cluster info sql
+  shell: "../files/k8s_helm_operator/create_lb.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+    HARBOR_ID : "{{harbor_username}}"
+    HARBOR_PW : "{{harbor_password}}"
+    HARBOR_IP : "{{lb_ip.stdout}}"
+    HARBOR_DOMAIN : "{{harbor_cert_CN}}"
+    HARBOR_PORT : "{{harbor_https_port}}"
+    LB_DOMAIN : "{{infra_lb_domain}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "loadbalancer"'
+- debug: var=installing
+
+- name: create cluster info sql
+  shell: "../files/k8s_helm_operator/create_nodeport.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+    HARBOR_ID : "{{harbor_username}}"
+    HARBOR_PW : "{{harbor_password}}"
+    HARBOR_IP : "{{harbor_ip}}"
+    HARBOR_DOMAIN : "{{harbor_cert_CN}}"
+    HARBOR_PORT : "{{harbor_https_port}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "nodeport"'
+- debug: var=installing
