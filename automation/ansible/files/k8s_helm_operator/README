@@ -1,0 +1,13 @@
+# Helm Operator 설치 방법 
+0. ansible에서 환경변수로 받아야할 변수 목록
+HARBOR_ID
+HARBOR_PW
+HARBOR_IP
+HARBOR_DOMAIN
+HARBOR_PORT
+
+1. apply.sh 실행 
+
+
+helm-operator/values.yaml과 helm-operator/templates/kube.yaml이 잘 만들어 졌는지 확인
+

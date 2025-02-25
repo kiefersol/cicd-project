@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "helm-operator.fullname" . }}-kube-config
+  namespace: {{ .Release.Namespace }}
+data:
+  ca.crt: |
+    {{- if .Values.kube.config }}
+    -----BEGIN CERTIFICATE-----
+    MIIDHDCCAgSgAwIBAgIUftsGYT/N3AmQCOQBm7Zmtj8o9H8wDQYJKoZIhvcNAQEL
+    BQAwJjETMBEGA1UEChMKS3ViZXJuZXRlczEPMA0GA1UEAxMGcm9vdENBMB4XDTIx
+    MTAyNzAxNTMwMFoXDTI2MTAyNjAxNTMwMFowJjETMBEGA1UEChMKS3ViZXJuZXRl
+    czEPMA0GA1UEAxMGcm9vdENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+    AQEAxuUR9nee/s8VeqoUBUh9bJ2gV5UWe2qHiIw3UwF7NKPXosKZ1B6apbJltyfV
+    SPDE8aC+s2V+t4aF6km8mqRpGyGquFStQbYLRQov26smFdXEVzwjVZ3D2UB+Ly+8
+    OuRUDT2pmGf1y1pLKSXgpbhI9Wolb5mbGauDQDxrge6umpa4ViWm0Cs6C5FF4XTS
+    oCyN0g4nifU+u8I1UTJAE+V8YddSWbM1qbWLQz5+PZ6x+cASJvp6zKMEr5sUV877
+    jAhjdaXuMkoDJmN5qPf6pLB7hiq15pL3hMWLHZ5ZutHDt9os/xu2LbUUnotFtit8
+    asHWpBrhJggHXF5j+xL+do3iZwIDAQABo0IwQDAOBgNVHQ8BAf8EBAMCAQYwDwYD
+    VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUn6gASLwaSh/wrzm9Q9c21X4UhaEwDQYJ
+    KoZIhvcNAQELBQADggEBAAmYHiIzdAPF4EFCUYde5V3WpiJ1AW1N1XfhJSypamcU
+    tvLfM9+ZKUxjGFQwkqVzg5oTAzkCClZcjbPMfwuXJTH6LtLu4rCPjHPc/A9wFcAK
+    H5g0b5aVKU5LjMZogA6UsL75kBp+ooBWN0ROfbZfr44Z3FA2hLl8qmmnyP5DY7PU
+    pXVzqYQvyqwr4KSm6cYlaUWMkQh8YL91Xo+zga78AigrSx6IYCy0yJwW6xsEqRtb
+    NB2W8+GQa/zmlvZXFDDlRfXzoYuuv7M4jeFJWi21awhuZehy/XN/EFDkB7ZU5hIu
+    5mTD/ibkC1wUOeleXCPqEUiyzomaJXWCDe+Fpu6RzSs=
+    -----END CERTIFICATE-----
+    {{- end }}
+  config: |
+    {{- if not .Values.clusterRole.create }}
+    apiVersion: v1
+    clusters: []
+    contexts:
+    - context:
+        cluster: ""
+        namespace: {{ .Release.Namespace }}
+        user: ""
+      name: default
+    current-context: default
+    kind: Config
+    preferences: {}
+    users: []
+    {{- else if .Values.kube.config }}
+      {{- if contains "\n" .Values.kube.config }}
+        {{- range $value := .Values.kube.config | splitList "\n" }}
+    {{ print $value }}
+        {{- end }}
+      {{- else }}
+    {{ .Values.kube.config }}
+      {{- end }}
+    {{- end }}
+
