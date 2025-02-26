@@ -7,3 +7,4 @@ automation/ansible/files/ssl_cert/*
 automation/ansible/files/harbor/install/*.tar.gz
 automation/ansible/files/k8s_cert/*
 automation/ansible/files/cloud_tool/*
+automation/ansible/files/k8s_istio/istio-1.14.0/bin/*

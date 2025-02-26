@@ -1,0 +1,19 @@
+---
+- name: install dashboard_k8s  
+  shell: "../files/k8s_istio/create_lb.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "loadbalancer"'
+- debug: var=installing
+
+- name: install dashboard_k8s  
+  shell: "../files/k8s_istio/create_nodeport.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "nodeport"'
+- debug: var=installing
+
