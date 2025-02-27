@@ -1,0 +1,10 @@
+---
+- name: install k8s monitoring
+  hosts: localhost
+  connection: local
+  become: no
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+
+  roles:
+    - k8s_monitoring
