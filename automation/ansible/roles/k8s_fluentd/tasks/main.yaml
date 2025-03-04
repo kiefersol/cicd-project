@@ -1,0 +1,17 @@
+---
+- name: create k8s fluentd
+  shell: "../files/k8s_fluentd/create_nodeport.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "nodeport"'
+
+- name: create k8s fluentd
+  shell: "../files/k8s_fluentd/create_lb.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{k8s_service_type}}" == "loadbalancer"'
+- debug: var=installing

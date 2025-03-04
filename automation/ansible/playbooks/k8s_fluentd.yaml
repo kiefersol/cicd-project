@@ -1,0 +1,9 @@
+---
+- name: install k8s fluentd
+  hosts: localhost
+  connection: local
+  become: no
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_fluentd
