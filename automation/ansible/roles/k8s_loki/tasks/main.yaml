@@ -1,0 +1,8 @@
+---
+- name: install k8s loki & promtail 
+  shell: "../files/k8s_loki/create.sh"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+- debug: var=installing
