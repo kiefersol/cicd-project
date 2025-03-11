@@ -96,7 +96,7 @@
     mode: 0755
 
 - name: install gitlab
-  shell: {{install_shell_dir}}/startGitlab.sh;
+  shell: "{{install_shell_dir}}/startGitlab.sh"
   register: installing
 - debug: var=installing
 
@@ -107,7 +107,7 @@
     mode: 0755
 
 - name: change gitlab change root username
-  shell: {{install_shell_dir}}/gitlab_change_root_username.sh;
+  shell: "{{install_shell_dir}}/gitlab_change_root_username.sh"
   register: installing
 - debug: var=installing
 

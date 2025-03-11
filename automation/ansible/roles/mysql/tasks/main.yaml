@@ -21,7 +21,7 @@
 - name: configure output template
   template:
     src: "../templates/infra/mysql_run.j2"
-    dest: {{install_shell_dir}}/mysql_docker.sh
+    dest: "{{install_shell_dir}}/mysql_docker.sh"
 
 - name: give permission to output file
   shell: chmod 755 {{install_shell_dir}}/mysql_docker.sh
@@ -29,4 +29,4 @@
     warn: false
 
 - name: mysql container
-  shell: {{install_shell_dir}}/mysql_docker.sh
+  shell: "{{install_shell_dir}}/mysql_docker.sh"

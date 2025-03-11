@@ -3,7 +3,7 @@
   file:
     path: '{{item}}'
     state: directory
-    mode: 0755
+    mode: 0777
   loop:
     - '{{nexus_data_dir}}'
 
@@ -22,12 +22,12 @@
   set_fact:
     nexus_port: "{{nexus_port}}"
     nexus_data_dir: "{{nexus_data_dir}}"
-    nexus_image : "docker.io/sonatype/nexus3:3.42.0"
+    nexus_image : "docker.io/sonatype/nexus3:3.68.1"
 
 - name: configure output template
   template:
     src: ../templates/infra/nexus_run.j2
-    dest: {{install_shell_dir}}/nexus_run.sh
+    dest: "{{install_shell_dir}}/nexus_run.sh"
 
 - name: give permission to output file
   shell: chmod 755 {{install_shell_dir}}/nexus_run.sh
@@ -35,7 +35,7 @@
     warn: false
 
 - name: nexus container
-  shell: {{install_shell_dir}}/nexus_run.sh
+  shell: "{{install_shell_dir}}/nexus_run.sh"
 
 
 

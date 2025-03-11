@@ -23,12 +23,12 @@
 - name: configure output template
   template:
     src: "../templates/infra/sonarqube_mysql_run.j2"
-    dest: {{install_shell_dir}}/sonarqube_mysql_run.sh
+    dest: "{{install_shell_dir}}/sonarqube_mysql_run.sh"
 
 - name: configure output template
   template:
     src: "../templates/infra/sonarqube_run.j2"
-    dest: {{install_shell_dir}}/sonarqube_run.sh
+    dest: "{{install_shell_dir}}/sonarqube_run.sh"
 
 - name: give permission to output file
   shell: chmod 755 {{install_shell_dir}}/sonarqube_mysql_run.sh
@@ -41,9 +41,9 @@
     warn: false
 
 - name: sonarqube mysql container
-  shell: {{install_shell_dir}}/sonarqube_mysql_run.sh
+  shell: "{{install_shell_dir}}/sonarqube_mysql_run.sh"
 
 - name: sonarqube container
-  shell: {{install_shell_dir}}/sonarqube_run.sh
+  shell: "{{install_shell_dir}}/sonarqube_run.sh"
 
 

@@ -7,6 +7,13 @@
   loop:
     - '{{jenkins_dir}}'  
 
+#전
+- name: Uncompressing jenkins installer
+  unarchive:
+    src: /ansible/files/jenkins/jenkins_redhat_{{jenkins_version}}.tgz
+    dest: "{{ jenkins_base_dir }}"
+  when: ansible_os_family == 'RedHat'
+
 - name: Get group id
   become: no
   shell: id -u; id -g;
@@ -29,12 +36,12 @@
     jenkins_agent_port: "{{jenkins_agent_port}}"
     jenkins_dir : "{{jenkins_dir}}"
     jenkins_memory : "{{jenkins_memory}}"
-    jenkins_image : "docker.io/jenkins/jenkins:2.417"
+    jenkins_image : "docker.io/jenkins/jenkins:{{jenkins_version}}"
 
 - name: configure output template
   template:
     src: "../templates/infra/jenkins_run.j2"
-    dest: {{install_shell_dir}}/jenkins_run.sh
+    dest: "{{install_shell_dir}}/jenkins_run.sh"
 
 - name: give permission to output file
   shell: chmod 755 {{install_shell_dir}}/jenkins_run.sh
@@ -42,4 +49,4 @@
     warn: false
 
 - name:  jenkins container
-  shell: {{install_shell_dir}}/jenkins_run.sh
+  shell: "{{install_shell_dir}}/jenkins_run.sh"

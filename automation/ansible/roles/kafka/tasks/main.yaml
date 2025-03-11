@@ -23,7 +23,7 @@
 - name: configure output template
   template:
     src: ../templates/infra/kafka_run.j2
-    dest: {{install_shell_dir}}/kafka-docker-compose.yml
+    dest: "{{install_shell_dir}}/kafka-docker-compose.yml"
 
 - name: kafka container
   shell: cd {{install_shell_dir}}; docker-compose -f ./kafka-docker-compose.yml up -d
