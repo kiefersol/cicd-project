@@ -18,13 +18,13 @@ nas_kubernetes_access_point = "/"
 
 # kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = false
-k8s_manual_worker_asg_install = false
-k8s_nodeport                  = false
+k8s_ami_make                  = true
+k8s_manual_worker_asg_install = true
+k8s_nodeport                  = true
 
 
 # EKS 사용
-k8s_eks_install         = true
+k8s_eks_install         = false
 k8s_cluster_version     = "1.30" # eks는 1.* 까지만 입력
 k8s_node_product_code   = "r5.large"
 k8s_ng_root_volume_size = 50
@@ -83,9 +83,9 @@ lb_k8s_target_group_health_check_port = [6443]
 k8s_asg_product_code     = "t2.medium" // vCPU 2EA, Memory 4GB
 k8s_asg_root_volume_size = 50
 k8s_asg_ebs_volume_size  = 70
-k8s_asg_max_size         = 2
-k8s_asg_min_size         = 2
-k8s_asg_desired_capacity = 2
+k8s_asg_max_size         = 1
+k8s_asg_min_size         = 1
+k8s_asg_desired_capacity = 1
 
 # template file
 infra_init    = "./templates/init_script/infra_init.tpl"   //infra vm init template

@@ -22,10 +22,12 @@ rotateCertificates: true
 serverTLSBootstrap: true
 containerLogMaxSize: {{kubelet_containerLogMaxSize}}
 containerLogMaxFiles: {{kubelet_containerLogMaxFiles}}
+nodeIP: {{ip_address}}
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
 nodeRegistration:
   name: {{node_name}}
   kubeletExtraArgs:
+    node-ip: {{ip_address}}
     cloud-provider: external

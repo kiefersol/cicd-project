@@ -23,7 +23,7 @@
     HARBOR_PORT : "{{harbor_https_port}}"
     LB_DOMAIN : "{{infra_lb_domain}}"
   register: installing
-  when: '"{{k8s_service_type}}" == "loadbalancer"'
+  when: '"{{kubernetes_service_type}}" == "loadbalancer"'
 - debug: var=installing
 
 - name: create cluster info sql
@@ -37,5 +37,5 @@
     HARBOR_DOMAIN : "{{harbor_cert_CN}}"
     HARBOR_PORT : "{{harbor_https_port}}"
   register: installing
-  when: '"{{k8s_service_type}}" == "nodeport"'
+  when: '"{{kubernetes_service_type}}" == "nodeport"'
 - debug: var=installing

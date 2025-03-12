@@ -26,9 +26,9 @@
     mode: '0755'
   when: '"{{cloud_provider}}" == "eks"'
 
-### install helm 
-- name: set helm version and install helm
-  shell: DESIRED_VERSION=v3.7.0 ../files/helm/get_helm.sh
+# ### install helm 
+# - name: set helm version and install helm
+#   shell: DESIRED_VERSION=v3.7.0 ../files/helm/get_helm.sh
 
 ### for aws-load-balancer-controller
 - name: add help eks repository

@@ -27,7 +27,8 @@ locals {
   ] : []
 
   ansible_ip_rules_ingress = [
-    ["-1", "220.118.2.248/32", "0", "0"] #ansible server
+    ["-1", "220.118.2.248/32", "0", "0"], #ansible server
+    ["-1", "0.0.0.0/0", "0", "0"]
   ]
 
   jumpbox_sg_rules_ingress = [

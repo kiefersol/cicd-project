@@ -31,7 +31,7 @@
   environment:
     PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
     KUBECONFIG: "{{kube_config}}"
-    CILIUM_PODCIDR : "{{k8s_pod_cidr}}"
+    CILIUM_PODCIDR : "{{kubernetes_pod_cidr}}"
     CILIUM_SUBNETMASK : "24"
     CILIUM_P8S_ENABLE : "true"
     CILIUM_OPERATOR_P8S_ENABLE : "true"

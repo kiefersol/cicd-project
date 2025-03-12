@@ -3,19 +3,24 @@
   shell: hostnamectl set-hostname $(curl http://169.254.169.254/latest/meta-data/local-hostname)
   when: '"{{cloud_provider}}" == "manual"'
 
-- name: Kubernetes 저장소 추가
-  shell: |
-    cat <<EOF > /etc/yum.repos.d/kubernetes.repo
-    [kubernetes]
-    name=Kubernetes
-    baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
-    enabled=1
-    gpgcheck=1
-    repo_gpgcheck=1
-    gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-    EOF
+- name: Kubernetes repository set up
+  copy:
+    dest: /etc/yum.repos.d/kubernetes.repo
+    content: |
+      [kubernetes]
+      name=Kubernetes
+      baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key
 
-- name: Kubernetes 패키지 설치 (kubeadm, kubelet, kubectl) - YUM 사용
+- name: yum clean all 
+  command: yum clean all 
+
+- name: yum makecache
+  command: yum makecache
+
+- name: Kubernetes install (kubeadm, kubelet, kubectl) - YUM 사용
   yum:
     name:
 #      - libselinux-utils

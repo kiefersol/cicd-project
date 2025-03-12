@@ -4,6 +4,11 @@
   delegate_to: "{{ groups['master'][0] }}"
   register: hostname1
 
+- name: Find ip address
+  shell: hostname -I |  cut -d ' ' -f1,1
+  register: ip_address
+  when: '"{{cloud_provider}}" == "manual"'
+  
 # - name: hostname2
 #   command: hostname
 #   delegate_to: "{{ groups['master'][1] }}"

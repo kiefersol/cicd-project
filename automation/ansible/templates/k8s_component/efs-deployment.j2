@@ -88,6 +88,9 @@ spec:
         - effect: NoSchedule
           operator: "Exists"
           key: node-role.kubernetes.io/control-plane
+        - effect: NoSchedule
+          operator: "Exists"
+          key: node.cloudprovider.kubernetes.io/uninitialized=true
       nodeSelector:
         kubernetes.io/role: master 
       serviceAccount: efs-provisioner
@@ -96,7 +99,7 @@ spec:
           image: quay.io/external_storage/efs-provisioner:v2.4.0
           env:
             - name: FILE_SYSTEM_ID
-              value: "{{tf_nfs_name}}"
+              value: "{{nfs_name}}"
             - name: AWS_REGION
               value: "{{region_name}}"
             - name: PROVISIONER_NAME
@@ -107,5 +110,5 @@ spec:
       volumes:
         - name: pvcs
           nfs:
-            server: "{{tf_nfs_dns}}"
+            server: "{{nfs_dns}}"
             path: /
