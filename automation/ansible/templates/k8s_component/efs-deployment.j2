@@ -88,9 +88,10 @@ spec:
         - effect: NoSchedule
           operator: "Exists"
           key: node-role.kubernetes.io/control-plane
-        - effect: NoSchedule
-          operator: "Exists"
-          key: node.cloudprovider.kubernetes.io/uninitialized=true
+        - effect: "NoSchedule"
+          operator: "Equal"
+          key: "node.cloudprovider.kubernetes.io/uninitialized"
+          value: "true"
       nodeSelector:
         kubernetes.io/role: master 
       serviceAccount: efs-provisioner

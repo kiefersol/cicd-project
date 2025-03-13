@@ -71,3 +71,20 @@ wget -qO /usr/local/bin/cfssljson https://pkg.cfssl.org/R1.2/cfssljson_linux-amd
 
 # 실행 권한 부여
 chmod +x /usr/local/bin/cfssl /usr/local/bin/cfssljson
+
+# Kubernetes repository set up
+echo "[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.30/rpm/repodata/repomd.xml.key" | sudo tee /etc/yum.repos.d/kubernetes.repo
+
+# Yum clean all
+sudo yum clean all
+
+# Yum makecache
+sudo yum makecache
+
+# Kubernetes install (kubeadm, kubelet, kubectl) - YUM 사용
+sudo yum install -y kubectl

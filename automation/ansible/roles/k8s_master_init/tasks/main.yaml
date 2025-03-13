@@ -62,6 +62,7 @@
 - name: insert variable
   set_fact:
     node_name: "{{hostname1.stdout}}"
+    ip_address: "{{ip_address.stdout}}"
   when: '"{{cloud_provider}}" == "manual"'
 
 - name: configure output template

@@ -7,13 +7,6 @@
   loop:
     - '{{jenkins_dir}}'  
 
-#전
-- name: Uncompressing jenkins installer
-  unarchive:
-    src: /ansible/files/jenkins/jenkins_redhat_{{jenkins_version}}.tgz
-    dest: "{{ jenkins_base_dir }}"
-  when: ansible_os_family == 'RedHat'
-
 - name: Get group id
   become: no
   shell: id -u; id -g;
