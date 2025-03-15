@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-DOMAIN_NAME=dev-host-infra-lb-05f7fb7aaac378fc.elb.ap-northeast-2.amazonaws.com:8443
+DOMAIN_NAME=cicd-dev-infra-lb-215c234cddeed69d.elb.ap-northeast-2.amazonaws.com:8443
 
 echo ${DOMAIN_NAME}
 git config --global http.sslverify false
@@ -7,7 +7,7 @@ git config --global user.name "Administrator"
 git config --global user.email "admin@example.com"
 
 git init
-git remote add origin https://bxcp:bxcp!gen3@${DOMAIN_NAME}/bookinfo/details.git
+git remote add origin https://sol:solsol1234!@${DOMAIN_NAME}/bookinfo/details.git
 git add .
 git commit -m "Initial commit"
 git push -u origin master
