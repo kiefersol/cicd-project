@@ -8,17 +8,23 @@
   loop:
     - '{{sonarqube_mysql_dir}}'
 
+- name: Find ip address
+  shell: hostname -I |  cut -d ' ' -f1,1
+  register: ip_address
+
 - name: insert variable
   set_fact:
-    sonarqube_mysq_user: "sonar"
-    sonarqube_mysq_password: "sonar"
-    sonarqube_mysq_root_password: "sonar"
+    sonarqube_mysql_user: "sonar"
+    sonarqube_mysql_password: "sonar"
+    sonarqube_mysql_root_password: "sonar"
     sonarqube_mysql_database: "sonar"
     sonarqube_mysql_dir: "{{sonarqube_mysql_dir}}"
     sonarqube_mysql_port: "{{sonarqube_mysql_port}}"
     sonarqube_mysql_image: "docker.io/library/mysql:5.7"
+    sonarqube_mysql_ip : "{{ip_address.stdout}}"
     sonarqube_image: "docker.io/library/sonarqube:7.7-community"
     sonarqube_port: "{{sonarqube_port}}"
+
 
 - name: configure output template
   template:

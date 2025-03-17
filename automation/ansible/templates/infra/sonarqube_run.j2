@@ -1,7 +1,7 @@
 sleep 30
 docker run -d --name sonarqube \
 -p {{sonarqube_port}}:9000 -p 9096:9092 \
--e SONARQUBE_JDBC_USERNAME={{sonarqube_mysq_user}} \
--e SONARQUBE_JDBC_PASSWORD={{sonarqube_mysq_password}} \
--e SONARQUBE_JDBC_URL="jdbc:mysql://127.0.0.1:{{sonarqube_mysql_port}}/{{sonarqube_mysql_database}}?useUnicode=true&characterEncoding=utf8" \
+-e SONARQUBE_JDBC_USERNAME={{sonarqube_mysql_user}} \
+-e SONARQUBE_JDBC_PASSWORD={{sonarqube_mysql_password}} \
+-e SONARQUBE_JDBC_URL="jdbc:mysql://{{sonarqube_mysql_ip}}:{{sonarqube_mysql_port}}/{{sonarqube_mysql_database}}?useUnicode=true&characterEncoding=utf8" \
 {{sonarqube_image}}

@@ -47,17 +47,17 @@
   ignore_errors: yes
   when: '"{{cloud_provider}}" == "eks"'
 
-# # kubernetes certification 
-# - name : apply kubelet-csr-approver directory *.yaml
-#   shell: "../files/k8s_cert/kubelet-csr-approver/create.sh"  
-#   environment:
-#     KUBECONFIG: "{{kube_config}}"
-#   register: installing
-#   when: '"{{cloud_provider}}" == "{{item}}"'
-#   with_items:
-#     - private
-#     - manual
-# - debug: var=installing
+# kubernetes certification 
+- name : apply kubelet-csr-approver directory *.yaml
+  shell: "../files/k8s_cert/kubelet-csr-approver/create.sh"  
+  environment:
+    KUBECONFIG: "{{kube_config}}"
+  register: installing
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - private
+    - manual
+- debug: var=installing
 
 # setting master node labels
 - name: Get master node name

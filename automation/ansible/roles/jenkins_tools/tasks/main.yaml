@@ -1,0 +1,20 @@
+---  
+- name: unzip is installed
+  yum:
+    name: unzip
+    state: present
+
+- name: Unzip gradle archive to /opt directory
+  unarchive:
+    src: ../files/gradle/gradle-5.6.4-bin.zip   
+    dest: /opt      
+
+- name: Unzip jdk 11 archive to /opt directory
+  unarchive:
+    src: ../files/jdk/jdk-11/openjdk-11.0.1_linux-x64_bin.tar.gz 
+    dest: /opt   
+
+- name: Unzip sonarqube archive to /opt directory
+  unarchive:
+    src: ../files/sonarqube/sonar-scanner-cli-4.7.0.2747-linux.zip
+    dest: /opt                                         

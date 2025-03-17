@@ -18,6 +18,12 @@
   loop:
     - '{{ jenkins_dir }}'
 
+- name: Uncompressing jenkins installer
+  unarchive:
+    src: ../files/jenkins/jenkins_{{jenkins_version}}.tgz
+    dest: "{{ jenkins_dir }}"
+  when: ansible_os_family == 'RedHat'
+
 - name: Update file mode
   shell: chmod -R 777 {{item}}
   loop:

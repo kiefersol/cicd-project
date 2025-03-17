@@ -8,4 +8,7 @@ docker run -it -d --name jenkins \
 -v /etc/hosts:/etc/hosts \
 -v /etc/localtime:/etc/localtime:ro  \
 -v /usr/share/zoneinfo/Asia/Seoul:/etc/timezone:ro \
+-v /opt/gradle-5.6.4:/opt/gradle-5.6.4 \
+-v /opt/jdk-11.0.1:/opt/jdk-11.0.1 \
+-v /opt/sonar-scanner-4.7.0.2747-linux:/opt/sonar-scanner-4.7.0.2747-linux \
 {{jenkins_image}}

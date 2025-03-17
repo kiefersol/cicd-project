@@ -7,21 +7,21 @@ region_name: ap-northeast-2
 system_type: dev
 access_key: AKIAQR5EPTOOAFOYWOME 
 secret_key: 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 
-jumpbox_ip: 52.79.96.117
-infra_lb_domain: cicd-dev-infra-lb-f2c1e964f2453f41.elb.ap-northeast-2.amazonaws.com 
-k8s_lb_domain: cicd-dev-k8s-lb-2b6d2a622f7d3eb3.elb.ap-northeast-2.amazonaws.com 
-infra_ip: 10.0.2.167 
+jumpbox_ip: 52.78.90.136
+infra_lb_domain: cicd-dev-infra-lb-490391942bdd1eca.elb.ap-northeast-2.amazonaws.com 
+k8s_lb_domain: cicd-dev-k8s-lb-fd8fa9e7179fab4f.elb.ap-northeast-2.amazonaws.com 
+infra_ip: 10.0.2.159 
 jenkins_ip :  "{{infra_lb_domain}}"
 kafka_ip : "{{infra_lb_domain}}"
 harbor_ip : "{{infra_lb_domain}}"
 gitlab_ip :  "{{infra_lb_domain}}"
 
-nfs_path: 10.0.2.72:/
-nfs_name: fs-05b5546fa8dba7e12
-nfs_dns: fs-05b5546fa8dba7e12.efs.ap-northeast-2.amazonaws.com
+nfs_path: 10.0.2.207:/
+nfs_name: fs-0aad31cff53054f6b
+nfs_dns: fs-0aad31cff53054f6b.efs.ap-northeast-2.amazonaws.com
 nas_mount_path: "/mnt/nfs"
 
-nfs_server: 10.0.2.72
+nfs_server: 10.0.2.207
 nfs_mountoptions: nfsvers=4.1
 nfs_pvc_name: solpv
 
@@ -105,7 +105,7 @@ k8s_cluster_autoscaler_version : 1.30
 
 k8s_api_ip : "{{k8s_lb_domain}}"  # ip 수정
 k8s_api_port : 6443
-master_ip : 10.0.2.48
+master_ip : 10.0.2.243
 k8s_cert_svc_ip : 25.0.0.1  # k8s service cidr값의 첫번째 ip
 
 nginx_ssl : false
@@ -129,8 +129,13 @@ mattermost_dir : /home/sol/mattermost
 mattermost_data_dir : /home/sol/mattermost/volumes
 
 sonarqube_mysql_dir : /home/sol/sonarqube_mysql
-sonarqube_mysql_port: 3306
+sonarqube_mysql_port: 3305
 sonarqube_port: 9000
 
 mysql_dir : /home/sol/mysql
 mysql_port : 3306
+
+bxcp_mariadb_dir: /home/sol/mysql
+bxcp_mariadb_dir_dev: /home/sol/mysql/dev
+bxcp_mariadb_version: 0.0.1
+bxcp_mariadb_port: 8081
