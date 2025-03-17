@@ -82,7 +82,7 @@ jenkins_dir : /home/sol/jenkins
 jenkins_port: 8080
 jenkins_agent_port: 50000
 jenkins_memory: 2g
-jenkins_version: 2.332.3
+jenkins_version: 2.444
 
 crictl_version : v1.30.0
 nerdctl_version : 1.7.3

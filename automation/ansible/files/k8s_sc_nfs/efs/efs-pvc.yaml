@@ -1,0 +1,14 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "pvc-solpvc"
+  namespace: kube-system
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "efs-provisioner"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi

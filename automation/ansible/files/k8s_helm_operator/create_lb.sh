@@ -3,7 +3,7 @@ set -x
 BASEDIR="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 VALUES_DIR="${BASEDIR}/helm-operator/"
 KUBE_DIR="${BASEDIR}/helm-operator/templates"
-ROOT_CA_DIR="/ansible/files/ssl_cert/rootCA.pem"
+ROOT_CA_DIR="${BASEDIR}/../ssl_cert/rootCA.pem"
 
 echo "----------------------------${HARBOR_ID}"
 echo "----------------------------${HARBOR_PW}"

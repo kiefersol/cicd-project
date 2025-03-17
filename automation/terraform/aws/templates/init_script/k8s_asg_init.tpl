@@ -31,6 +31,7 @@ nodeRegistration:
   name: "$(uname -n)"
   kubeletExtraArgs:
     cloud-provider: external
+    node-ip: "$(hostname -I |  cut -d ' ' -f1,1)"
 EOF
 
 sudo kubeadm join --config /home/sol/worker.yaml

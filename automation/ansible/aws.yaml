@@ -1,26 +1,47 @@
-- import_playbook: ./playbooks/ssh_known_host.yaml
+# - import_playbook: ./playbooks/ssh_known_host.yaml
 - import_playbook: ./playbooks/ssh_test.yaml
 - import_playbook: ./playbooks/set_timezone.yaml
 - import_playbook: ./playbooks/stop_firewalld.yaml 
-- import_playbook: ./playbooks/net-tool.yaml
+- import_playbook: ./playbooks/net-tools.yaml
 - import_playbook: ./playbooks/nfs_install.yaml
 - import_playbook: ./playbooks/set_block_storage.yaml
-# - import_playbook: ./playbooks/nfs_connect.yaml
-- import_playbook: ./playbooks/sshpass.yaml
+- import_playbook: ./playbooks/nfs_connect.yaml
 - import_playbook: ./playbooks/ssl_cert.yaml
 - import_playbook: ./playbooks/docker.yaml
 - import_playbook: ./playbooks/harbor.yaml
-- import_playbook: ./playbooks/sonarqube.yaml
-- import_playbook: ./playbooks/nexus.yaml 
-- import_playbook: ./playbooks/mysql.yaml
-- import_playbook: ./playbooks/mattermost.yaml
-- import_playbook: ./playbooks/kafka.yaml 
+- import_playbook: ./playbooks/jenkins_tools.yaml 
 - import_playbook: ./playbooks/jenkins.yaml 
 - import_playbook: ./playbooks/gitlab.yaml 
+# - import_playbook: ./playbooks/sonarqube.yaml
+# - import_playbook: ./playbooks/nexus.yaml 
+# - import_playbook: ./playbooks/mysql.yaml
+# - import_playbook: ./playbooks/mattermost.yaml
+# - import_playbook: ./playbooks/kafka.yaml 
 
 
 
+# - import_playbook: ./playbooks/containerd.yaml
+# - import_playbook: ./playbooks/sshpass.yaml
+# - import_playbook: ./playbooks/k8s_install.yaml
+# - import_playbook: ./playbooks/k8s_nodeHA_kubelet.yaml
+# - import_playbook: ./playbooks/k8s_master_init.yaml
+# - import_playbook: ./playbooks/k8s_nodeHA_master.yaml
+# - import_playbook: ./playbooks/k8s_master_join.yaml
+# - import_playbook: ./playbooks/k8s_worker.yaml
+# - import_playbook: ./playbooks/k8s_cloud_provider.yaml
+# - import_playbook: ./playbooks/k8s_cni.yaml
+# - import_playbook: ./playbooks/k8s_cluster.yaml
 
 
+# # - import_playbook: ./playbooks/k8s_config.yaml
+# # - import_playbook: ./playbooks/k8s_autoscaler.yaml
 
- 
+
+# - import_playbook: ./playbooks/k8s_sc_cloud_provider.yaml
+# - import_playbook: ./playbooks/k8s_sc_efs.yaml
+# - import_playbook: ./playbooks/k8s_dashboard.yaml
+# - import_playbook: ./playbooks/k8s_helm_operator.yaml
+# - import_playbook: ./playbooks/k8s_istio.yaml
+# - import_playbook: ./playbooks/k8s_fluentd.yaml
+# - import_playbook: ./playbooks/k8s_loki.yaml
+# - import_playbook: ./playbooks/k8s_monitoring.yaml

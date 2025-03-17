@@ -29,8 +29,6 @@ spec:
           - effect: NoSchedule
             operator: "Exists"
             key: node-role.kubernetes.io/control-plane
-        nodeSelector:
-          kubernetes.io/role: master 
 
     # Istio Gateway feature
     ingressGateways:
@@ -62,8 +60,6 @@ spec:
           - effect: NoSchedule
             operator: "Exists"
             key: node-role.kubernetes.io/control-plane
-        nodeSelector:
-          kubernetes.io/role: master 
         hpaSpec:
           maxReplicas: 5
           minReplicas: 1
@@ -282,10 +278,3 @@ spec:
           - name: ingressgateway-ca-certs
             secretName: istio-ingressgateway-ca-certs
             mountPath: /etc/istio/ingressgateway-ca-certs
-
-# 라벨 sol.io/owner**가 존재하지 않는 Pod에는 Istio 사이드카가 자동으로 주입되지 않습니다.
-    sidecarInjectorWebhook:
-      neverInjectSelector:
-        - matchExpressions:
-            - key: sol.io/owner
-              operator: DoesNotExist

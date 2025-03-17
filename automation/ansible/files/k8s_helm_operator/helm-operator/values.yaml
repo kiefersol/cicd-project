@@ -74,17 +74,15 @@ configureRepositories:
   cacheVolumeName: repositories-cache
   repositories:
     - name: repository1
-      url: https://dev-member-k8s-lb-0e0c1014704c8a20.elb.ap-northeast-2.amazonaws.com:5443/chartrepo/bxcp-system-common
-      username: bxcp
-      password: "bxcp!gen3"
+      url: https://registry.sol.lab:5443/chartrepo/bxcp-system-common
+      username: sol
+      password: "solsol1234!"
       caFile: /root/.kube/ca.crt
     - name: repository2
-      url: https://dev-member-k8s-lb-0e0c1014704c8a20.elb.ap-northeast-2.amazonaws.com:5443/chartrepo/bxcp-system-common
-      username: bxcp
-      password: "bxcp!gen3"
+      url: https://cicd-dev-infra-lb-490391942bdd1eca.elb.ap-northeast-2.amazonaws.com:5443/chartrepo/bxcp-system-common
+      username: sol
+      password: "solsol1234!"
       caFile: /root/.kube/ca.crt
-
-
 
 # Helm plugins to initialize before starting the operator.
 initPlugins:
@@ -235,9 +233,9 @@ resources:
     memory: 64Mi
 # Host aliases allow the modification of the hosts file (/etc/hosts) inside Helm Operator container.
 hostAliases:
-  - ip: "52.79.245.149"
+  - ip: "cicd-dev-infra-lb-490391942bdd1eca.elb.ap-northeast-2.amazonaws.com"
     hostnames:
-      - "dev-member-k8s-lb-0e0c1014704c8a20.elb.ap-northeast-2.amazonaws.com"
+      - "registry.sol.lab"
 
 priorityClassName: ""
 

@@ -282,10 +282,3 @@ spec:
           - name: ingressgateway-ca-certs
             secretName: istio-ingressgateway-ca-certs
             mountPath: /etc/istio/ingressgateway-ca-certs
-
-# 라벨 sol.io/owner**가 존재하지 않는 Pod에는 Istio 사이드카가 자동으로 주입되지 않습니다.
-    sidecarInjectorWebhook:
-      neverInjectSelector:
-        - matchExpressions:
-            - key: sol.io/owner
-              operator: DoesNotExist

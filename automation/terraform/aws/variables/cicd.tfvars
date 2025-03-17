@@ -18,10 +18,21 @@ nas_kubernetes_access_point = "/"
 
 # kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = true
-k8s_manual_worker_asg_install = true
+k8s_ami_make                  = false
+k8s_manual_worker_asg_install = false
 k8s_nodeport                  = true
 
+
+/*    
+    Product code
+    - vCPU 2EA, Memory 4GB : "t2.medium"
+    - vCPU 2EA, Memory 16GB : "r5.large"
+    - vCPU 4EA, Memory 16GB : "t3.xlarge"
+    - vCPU 4EA, Memory 32GB : "r5.xlarge" 
+    - vCPU 4EA, Memory 32GB, [SSD]Disk 150GB : "r5d.xlarge"  
+    - vCPU 8EA, Memory 32GB : "t3.2xlarge"
+    - vCPU 16EA, Memory 64GB, Disk 50GB : "m5.4xlarge"
+*/
 
 # EKS 사용
 k8s_eks_install         = false
@@ -47,15 +58,15 @@ bastion_root_block_device_size = 16
 
 # infra vm
 infra_image_code                 = "ami-0a0cd2f78e9ef322a"
-infra_product_code               = "t2.medium" // vCPU 2EA, Memory 4GB
+infra_product_code               = "t3.xlarge" // vCPU 4EA, Memory 16GB
 infra_root_block_device_size     = 50
 infra_ebs_root_block_device_size = 70
 
 # infra lb
-lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins"]
-lb_infra_listener_port                  = [5443, 8443, 8081, 8080]
-lb_infra_target_group_port              = [5443, 8443, 8081, 8080]
-lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080]
+lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"mysql", "admin"]
+lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 30131, 30130]
+lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 30131, 30130]
+lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 30131, 30130]
 
 k8s_version      = "1.30.1"
 k8s_pod_cidr     = "20.0.0.0/10"
@@ -63,26 +74,26 @@ k8s_service_cidr = "25.0.0.0/16"
 
 # k8s master vm
 master_image_code                 = "ami-0a0cd2f78e9ef322a"
-master_product_code               = "t2.medium" // vCPU 2EA, Memory 4GB 
+master_product_code               = "t3.xlarge" // vCPU 4EA, Memory 16GB
 master_root_block_device_size     = 50
-master_ebs_root_block_device_size = 70
+master_ebs_root_block_device_size = 10
 
 # k8s worker vm
 worker_image_code                 = "ami-0a0cd2f78e9ef322a"
-worker_product_code               = "t2.medium" // vCPU 2EA, Memory 4GB 
+worker_product_code               = "t3.xlarge" // vCPU 4EA, Memory 16GB
 worker_root_block_device_size     = 50
-worker_ebs_root_block_device_size = 70
+worker_ebs_root_block_device_size = 10
 
 # k8s lb
-lb_k8s_component_list                 = ["k8s"]
-lb_k8s_listener_port                  = [6443]
-lb_k8s_target_group_port              = [6443]
-lb_k8s_target_group_health_check_port = [6443]
+lb_k8s_component_list                 = ["k8s", "grafana", "kiali", "jaeger", "p8s", "dashboard", "istio","hubble"]
+lb_k8s_listener_port                  = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
+lb_k8s_target_group_port              = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
+lb_k8s_target_group_health_check_port = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
 
 # k8s auto scaling group
-k8s_asg_product_code     = "t2.medium" // vCPU 2EA, Memory 4GB
+k8s_asg_product_code     = "t3.xlarge" // vCPU 4EA, Memory 16GB
 k8s_asg_root_volume_size = 50
-k8s_asg_ebs_volume_size  = 70
+k8s_asg_ebs_volume_size  = 0
 k8s_asg_max_size         = 1
 k8s_asg_min_size         = 1
 k8s_asg_desired_capacity = 1
