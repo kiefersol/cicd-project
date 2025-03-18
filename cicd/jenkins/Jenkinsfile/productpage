@@ -1,0 +1,123 @@
+pipeline {
+    agent any
+    
+    environment {
+        GIT_REPO = "gitlab.sol.lab:8443"
+        GIT_BRANCH = "master"
+        DOCKER_REGISTRY = "registry.sol.lab:5443"
+        SONARQUBE_URL = "cicd-dev-infra-lb-7800375cae98720b.elb.ap-northeast-2.amazonaws.com:9000"
+        SONARQUBE_TOKEN = "16586efe3268e7389007e28c90a3db058a05be07"
+        MATTERMOST_URL = "cicd-dev-infra-lb-7800375cae98720b.elb.ap-northeast-2.amazonaws.com:8085"
+        MATTERMOST_TOKEN = "ct1imw5u13ddxpejmmyewufi3o"
+        MAIL_TO ="hansol4412@naver.com"
+    }
+
+    stages {
+        stage('Cleanup Workspace') {
+            steps {
+                script {
+                    cleanWs()                
+                }
+            }
+        }
+
+        stage('Checkout Git Source Code') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'git-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh '''
+                            JOB_SHORT_NAME=$(basename ${JOB_NAME})
+
+                            git config --global http.sslVerify false
+                            git clone https://${GIT_USER}:${GIT_PASS}@${GIT_REPO}/${JOB_NAME} ${JOB_SHORT_NAME}
+                            cd ${JOB_SHORT_NAME}
+                            git checkout ${GIT_BRANCH}
+                        '''
+                    }
+                }
+            }
+        }
+               
+        stage('Source Code Scanning with SonarQube') {
+            steps {
+                
+                withSonarQubeEnv('sonarQube'){
+                    sh '''
+                    JOB_SHORT_NAME=$(basename ${JOB_NAME})
+                    cd ${JOB_SHORT_NAME}
+                    /opt/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
+                    -Dsonar.projectKey=${JOB_SHORT_NAME} \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    JOB_SHORT_NAME=$(basename ${JOB_NAME})
+                    cd ${JOB_SHORT_NAME}
+                    docker build -t ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER} .
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                            docker login ${DOCKER_REGISTRY} -u ${DOCKER_USER} -p ${DOCKER_PASS}
+                            docker push ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER}
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Image Scanning With Trivy') { 
+            agent {
+                docker {
+                    image 'aquasec/trivy:0.42.0'
+                    args '--entrypoint "" -u 0:1000'
+                }
+            }
+            
+            steps {
+                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER}"
+            }
+        }
+    }
+
+    post { 
+        always{
+            mail to: "${MAIL_TO}", 
+            subject: "${currentBuild.currentResult} : ${JOB_NAME} [${BUILD_NUMBER}]",
+            body: "${currentBuild.currentResult}" + " : " +  "${JOB_NAME} [${BUILD_NUMBER}] (${BUILD_URL})" 
+        }
+        
+        failure { 
+            echo '### on failure!'
+            mattermostSend (
+                color: "danger", 
+                channel: "jenkins", 
+                endpoint: "http://${MATTERMOST_URL}/hooks/${MATTERMOST_TOKEN}",
+                message: "Build ${currentBuild.result}: ${JOB_NAME} #${BUILD_NUMBER} (<${BUILD_URL}|Link to build>)"
+            )
+        }
+        
+        success { 
+            echo '### on success!'
+            mattermostSend (
+                color: "good", 
+                channel: "jenkins", 
+                endpoint: "http://${MATTERMOST_URL}/hooks/${MATTERMOST_TOKEN}",
+                message: "Build ${currentBuild.result}: ${JOB_NAME} #${BUILD_NUMBER} (<${BUILD_URL}|Link to build>)"
+                        
+            )
+        }
+    }
+}
