@@ -1,18 +1,18 @@
 # - import_playbook: ./playbooks/ssh_known_host.yaml
-- import_playbook: ./playbooks/ssh_test.yaml
-- import_playbook: ./playbooks/set_timezone.yaml
-- import_playbook: ./playbooks/stop_firewalld.yaml 
-- import_playbook: ./playbooks/net-tools.yaml
-- import_playbook: ./playbooks/nfs_install.yaml
-- import_playbook: ./playbooks/set_block_storage.yaml
-- import_playbook: ./playbooks/nfs_connect.yaml
+# - import_playbook: ./playbooks/ssh_test.yaml
+# - import_playbook: ./playbooks/set_timezone.yaml
+# - import_playbook: ./playbooks/stop_firewalld.yaml 
+# - import_playbook: ./playbooks/net-tools.yaml
+# - import_playbook: ./playbooks/nfs_install.yaml
+# - import_playbook: ./playbooks/set_block_storage.yaml
+# - import_playbook: ./playbooks/nfs_connect.yaml
 - import_playbook: ./playbooks/ssl_cert.yaml
 - import_playbook: ./playbooks/docker.yaml
 - import_playbook: ./playbooks/harbor.yaml
 - import_playbook: ./playbooks/jenkins_tools.yaml 
 - import_playbook: ./playbooks/jenkins.yaml 
 - import_playbook: ./playbooks/gitlab.yaml 
-# - import_playbook: ./playbooks/sonarqube.yaml
+- import_playbook: ./playbooks/sonarqube.yaml
 # - import_playbook: ./playbooks/nexus.yaml 
 # - import_playbook: ./playbooks/mysql.yaml
 # - import_playbook: ./playbooks/mattermost.yaml
