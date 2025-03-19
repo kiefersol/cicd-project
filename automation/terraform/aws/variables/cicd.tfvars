@@ -64,9 +64,9 @@ infra_ebs_root_block_device_size = 70
 
 # infra lb
 lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"mysql", "admin"]
-lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 30131, 30130]
-lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 30131, 30130]
-lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 30131, 30130]
+lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 9000, 30130]
+lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 9000, 30130]
+lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 9000, 30130]
 
 k8s_version      = "1.30.1"
 k8s_pod_cidr     = "20.0.0.0/10"

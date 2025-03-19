@@ -1,0 +1,28 @@
+---
+- name: make argocd namespace
+  shell: kubectl create namespace argocd
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+
+- name: create k8s argocd
+  shell: kubectl apply -n argocd -f ../files/k8s_argocd/install_lb.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  register: installing
+  when: '"{{kubernetes_service_type}}" == "loadbalancer"'
+- debug: var=installing
+
+- name: create k8s argocd
+  shell: kubectl apply -n argocd -f ../files/k8s_argocd/install_nodeport.yaml
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  register: installing
+  when: '"{{kubernetes_service_type}}" == "nodeport"'
+- debug: var=installing
+
+- name: Make sure service has time to start
+  pause:
+    seconds: 180

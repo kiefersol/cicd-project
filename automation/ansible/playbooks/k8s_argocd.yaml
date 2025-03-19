@@ -1,0 +1,9 @@
+---
+- name: create k8s argocd
+  hosts: localhost
+  connection: local
+  gather_facts: no  
+  vars_files:
+    - ./{{vars_file_name}}.yaml
+  roles:
+    - k8s_argocd
