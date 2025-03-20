@@ -88,3 +88,8 @@ sudo yum makecache
 
 # Kubernetes install (kubeadm, kubelet, kubectl) - YUM 사용
 sudo yum install -y kubectl
+
+# install argocd cli
+curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/download/v2.7.9/argocd-linux-amd64
+chmod +x argocd
+sudo mv argocd /usr/local/bin/

@@ -26,3 +26,127 @@
 - name: Make sure service has time to start
   pause:
     seconds: 180
+
+- name: get k8s argocd initial password
+  shell: "kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  register: initial_password
+
+- name: insert variable
+  set_fact:
+    argocd_initial_password: "{{initial_password.stdout }}"
+
+- name: configure env template
+  template:
+    src: ./templates/k8s_component/argocd_admin_login.j2
+    dest: "../files/k8s_argocd/user-authentication.json"
+
+- name: get k8s argocd server nodePort
+  shell: 'kubectl get svc argocd-server -n argocd -o jsonpath="{.spec.ports[1].nodePort}"'
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+  ignore_errors: yes
+  register: argocd_port
+
+- name: get k8s argocd server address
+  shell: 'kubectl get svc argocd-server -n argocd -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"'
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}"  
+  ignore_errors: yes
+  register: argocd_lb
+
+- name: get k8s argocd token using nodeport
+  shell: "curl -k -d @../files/k8s_argocd/user-authentication.json https://{{k8s_lb_domain}}:{{argocd_port.stdout}}/api/v1/session > ../files/k8s_argocd/argocd_token"
+  when: '"{{kubernetes_service_type}}" == "nodeport"'
+- debug: var=installing
+
+- name: get k8s argocd token using lb
+  shell: "curl -k -d @../files/k8s_argocd/user-authentication.json https://{{argocd_lb.stdout}}:443/api/v1/session > ../files/k8s_argocd/argocd_token"
+  when: '"{{kubernetes_service_type}}" == "loadbalancer"'
+- debug: var=installing
+
+- name: get k8s argocd token
+  shell: cat ../files/k8s_argocd/argocd_token | tr '"' '\n' | tail -2 | head -1 
+  register: argocd_token
+
+- name: get encoding gitlab rootca
+  shell: cat ../files/ssl_cert/rootCA.pem | base64
+  register: gitlab_ca
+
+- name: insert variable
+  set_fact:
+    gitlab_rootca: "{{gitlab_ca.stdout }}"
+
+- name: configure env template
+  template:
+    src: ./templates/k8s_component/argocd_gitlab_rootca.j2
+    dest: "../files/k8s_argocd/trust.json"
+
+- name: set gitlab rootca to argocd server
+  shell: 'curl -k -H "Authorization: Bearer {{argocd_token.stdout}}" -d @../files/k8s_argocd/trust.json https://{{k8s_lb_domain}}:{{argocd_port.stdout}}/api/v1/certificates'
+  when: '"{{kubernetes_service_type}}" == "nodeport"'
+
+- name: set gitlab rootca to argocd server
+  shell: 'curl -k -H "Authorization: Bearer {{argocd_token.stdout}}" -d @../files/k8s_argocd/trust.json https://{{argocd_lb.stdout}}:443/api/v1/certificates'
+  when: '"{{kubernetes_service_type}}" == "loadbalancer"'
+
+- name: configure env template
+  template:
+    src: ./templates/k8s_component/argocd_gitlab_login.j2
+    dest: "../files/k8s_argocd/repo.json"
+
+- name: set gitlab login infomation to argocd server
+  shell: 'curl -k -H "Authorization: Bearer {{argocd_token.stdout}}" -d @../files/k8s_argocd/repo.json https://{{k8s_lb_domain}}:{{argocd_port.stdout}}/api/v1/repocreds'
+  when: '"{{kubernetes_service_type}}" == "nodeport"'
+
+- name: set gitlab login infomation to argocd server
+  shell: 'curl -k -H "Authorization: Bearer {{argocd_token.stdout}}" -d @../files/k8s_argocd/repo.json https://{{argocd_lb.stdout}}:443/api/v1/repocreds'
+  when: '"{{kubernetes_service_type}}" == "loadbalancer"'
+
+- name: Connect argocd and gitlab through secret 
+  shell: kubectl patch secret argocd-secret -n argocd  -p='{"stringData":{"webhook.gitlab.secret":"{{gitlab_password}}"}}' -v=1
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name : rollout restart statefulset - replicas 0
+  shell: "kubectl scale statefulset --replicas 0 -n argocd argocd-application-controller"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name : rollout restart deployment - replicas 0
+  shell: "kubectl scale deployment --replicas 0 -n argocd {{item}}"
+  loop:
+    - argocd-applicationset-controller
+    - argocd-dex-server
+    - argocd-notifications-controller
+    - argocd-redis
+    - argocd-repo-server
+    - argocd-server
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name : rollout restart statefulset - replicas 1
+  shell: "kubectl scale statefulset --replicas 1 -n argocd argocd-application-controller"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+
+- name : rollout restart deployment - replicas 1
+  shell: "kubectl scale deployment --replicas 1 -n argocd {{item}}"
+  loop:
+    - argocd-applicationset-controller
+    - argocd-dex-server
+    - argocd-notifications-controller
+    - argocd-redis
+    - argocd-repo-server
+    - argocd-server
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
