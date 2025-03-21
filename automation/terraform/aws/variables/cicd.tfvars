@@ -18,8 +18,8 @@ nas_kubernetes_access_point = "/"
 
 # kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = false
-k8s_manual_worker_asg_install = false
+k8s_ami_make                  = true
+k8s_manual_worker_asg_install = true
 k8s_nodeport                  = true
 
 
@@ -63,10 +63,10 @@ infra_root_block_device_size     = 50
 infra_ebs_root_block_device_size = 70
 
 # infra lb
-lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"mysql", "admin"]
-lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 9000, 30130]
-lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 9000, 30130]
-lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 9000, 30130]
+lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"mysql", "mattermost"]
+lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 9000, 8085]
+lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 9000, 8085]
+lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 9000, 8085]
 
 k8s_version      = "1.30.1"
 k8s_pod_cidr     = "20.0.0.0/10"
@@ -85,10 +85,10 @@ worker_root_block_device_size     = 50
 worker_ebs_root_block_device_size = 10
 
 # k8s lb
-lb_k8s_component_list                 = ["k8s", "grafana", "kiali", "jaeger", "p8s", "dashboard", "istio","hubble"]
-lb_k8s_listener_port                  = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
-lb_k8s_target_group_port              = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
-lb_k8s_target_group_health_check_port = [6443, 31020, 31030, 31050, 31060, 31000, 30080, 31070]
+lb_k8s_component_list                 = ["k8s", "grafana", "kiali", "jaeger", "p8s", "istio","argocd", "argo-tls"]
+lb_k8s_listener_port                  = [6443, 31020, 31030, 31050, 31060, 30080, 31080, 31081]
+lb_k8s_target_group_port              = [6443, 31020, 31030, 31050, 31060, 30080, 31080, 31081]
+lb_k8s_target_group_health_check_port = [6443, 31020, 31030, 31050, 31060, 30080, 31080, 31081]
 
 # k8s auto scaling group
 k8s_asg_product_code     = "t3.xlarge" // vCPU 4EA, Memory 16GB

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-DOMAIN_NAME=cicd-dev-infra-lb-7800375cae98720b.elb.ap-northeast-2.amazonaws.com:8443
+DOMAIN_NAME=cicd-dev-infra-lb-c610f94d04937e8d.elb.ap-northeast-2.amazonaws.com:8443
 
 echo ${DOMAIN_NAME}
 git config --global http.sslverify false

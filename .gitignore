@@ -15,3 +15,5 @@ automation/ansible/files/jenkins
 automation/ansible/files/sonarqube
 automation/ansible/playbooks/admin.yaml
 automation/ansible/roles/admin
+automation/ansible/files/k8s_argocd/argocd_token
+automation/ansible/files/k8s_argocd/*.json

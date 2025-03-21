@@ -16,6 +16,7 @@ then
   cat ${GITLAB_TOKEN_FILE}
   source ../generated/tokens/gitlab_token
   ./create-group.sh bookinfo
+  ./create-group.sh bookinfo-k8s
 else
   echo gitlab is not working
   exit 1

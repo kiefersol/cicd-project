@@ -6,16 +6,17 @@
 # - import_playbook: ./playbooks/nfs_install.yaml
 # - import_playbook: ./playbooks/set_block_storage.yaml
 # - import_playbook: ./playbooks/nfs_connect.yaml
-- import_playbook: ./playbooks/ssl_cert.yaml
-- import_playbook: ./playbooks/docker.yaml
-- import_playbook: ./playbooks/harbor.yaml
-- import_playbook: ./playbooks/jenkins_tools.yaml 
-- import_playbook: ./playbooks/jenkins.yaml 
-- import_playbook: ./playbooks/gitlab.yaml 
-- import_playbook: ./playbooks/sonarqube.yaml
+# - import_playbook: ./playbooks/ssl_cert.yaml
+# - import_playbook: ./playbooks/docker.yaml
+# - import_playbook: ./playbooks/harbor.yaml
+# - import_playbook: ./playbooks/gitlab.yaml 
+# - import_playbook: ./playbooks/jenkins_tools.yaml 
+# - import_playbook: ./playbooks/jenkins.yaml
+# - import_playbook: ./playbooks/sonarqube.yaml
+# - import_playbook: ./playbooks/mattermost.yaml
+
 # - import_playbook: ./playbooks/nexus.yaml 
 # - import_playbook: ./playbooks/mysql.yaml
-# - import_playbook: ./playbooks/mattermost.yaml
 # - import_playbook: ./playbooks/kafka.yaml 
 
 
@@ -37,11 +38,12 @@
 # # - import_playbook: ./playbooks/k8s_autoscaler.yaml
 
 
-# - import_playbook: ./playbooks/k8s_sc_cloud_provider.yaml
+- import_playbook: ./playbooks/k8s_sc_cloud_provider.yaml
 # - import_playbook: ./playbooks/k8s_sc_efs.yaml
 # - import_playbook: ./playbooks/k8s_dashboard.yaml
 # - import_playbook: ./playbooks/k8s_helm_operator.yaml
-# - import_playbook: ./playbooks/k8s_istio.yaml
+- import_playbook: ./playbooks/k8s_istio.yaml
 # - import_playbook: ./playbooks/k8s_fluentd.yaml
 # - import_playbook: ./playbooks/k8s_loki.yaml
-# - import_playbook: ./playbooks/k8s_monitoring.yaml
+- import_playbook: ./playbooks/k8s_monitoring.yaml
+- import_playbook: ./playbooks/k8s_argocd.yaml
