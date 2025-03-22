@@ -5,11 +5,10 @@ metadata:
   name: productpage
   namespace: bookinfo
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
     app: productpage
   ports:
     - protocol: TCP
       port: 9080       # 서비스 내부 포트
       targetPort: 9080 # 컨테이너의 포트
-      nodePort : 31020

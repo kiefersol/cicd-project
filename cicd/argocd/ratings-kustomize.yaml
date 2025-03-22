@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ratings
+  namespace: argocd
+spec:
+  project: bookinfo  # 이미 생성된 AppProject 리소스를 참조
+  source:
+    repoURL: 'https://gitlab.sol.lab:8443/bookinfo-k8s/ratings.git'
+    targetRevision: HEAD
+    path: kustomize  # 실제 path로 수정
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: bookinfo  # 배포할 네임스페이스
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true  # 네임스페이스가 없으면 자동 생성

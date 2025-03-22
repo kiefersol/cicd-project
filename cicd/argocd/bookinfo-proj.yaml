@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: bookinfo
+  namespace: argocd  # 반드시 argocd 네임스페이스에 생성해야 함
+spec:
+  description: "Argocd Bookinfo Project"
+
+  # 허용된 Git 저장소
+  sourceRepos:
+    - https://gitlab.sol.lab:8443/bookinfo-k8s/*
+
+  # 배포 가능한 클러스터 및 네임스페이스
+  destinations:
+    - namespace: bookinfo
+      server: https://kubernetes.default.svc  # 해당 클러스터의 default 서버를 가리킴
+
+  # 클러스터 리소스 허용 목록 (Cluster-wide 리소스를 허용)
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'  # 모든 클러스터 리소스를 허용
+
+  # 네임스페이스 리소스 허용 목록 (특정 네임스페이스에서 사용할 리소스를 허용)
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'  # 모든 네임스페이스 리소스를 허용
+
