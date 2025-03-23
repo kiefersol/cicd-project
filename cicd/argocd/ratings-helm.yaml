@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ratings  
+  namespace: argocd
+spec:
+  project: bookinfo
+  source:
+    repoURL: 'https://gitlab.sol.lab:8443/bookinfo-k8s/ratings.git'
+    targetRevision: main
+    path: helm/ratings
+    helm:
+      releaseName: ratings  # 고정
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: bookinfo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

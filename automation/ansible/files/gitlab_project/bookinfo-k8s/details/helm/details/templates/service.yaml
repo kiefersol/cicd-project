@@ -1,15 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "details.fullname" . }}
-  labels:
-    {{- include "details.labels" . | nindent 4 }}
+  name: details
+  namespace: bookinfo
 spec:
   type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
   selector:
-    {{- include "details.selectorLabels" . | nindent 4 }}
+    app: details
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
