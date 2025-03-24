@@ -1,0 +1,5 @@
+{
+    "name": "bookinfo-k8s",
+    "path": "bookinfo-k8s",
+    "visibility": "internal"
+}

@@ -5,7 +5,7 @@
 # - import_playbook: ./playbooks/net-tools.yaml
 # - import_playbook: ./playbooks/nfs_install.yaml
 # - import_playbook: ./playbooks/set_block_storage.yaml
-# - import_playbook: ./playbooks/nfs_connect.yaml
+# # - import_playbook: ./playbooks/nfs_connect.yaml
 # - import_playbook: ./playbooks/ssl_cert.yaml
 # - import_playbook: ./playbooks/docker.yaml
 # - import_playbook: ./playbooks/harbor.yaml

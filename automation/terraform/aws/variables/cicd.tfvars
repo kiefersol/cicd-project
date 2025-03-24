@@ -12,14 +12,14 @@ subnet_private_cidr = ["10.0.2.0/24"]
 nat_install         = true
 
 # nas
-nas_install                 = true
+nas_install                 = false
 nas_infra_access_point      = "/mnt/nfs"
 nas_kubernetes_access_point = "/"
 
 # kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = true
-k8s_manual_worker_asg_install = true
+k8s_ami_make                  = false
+k8s_manual_worker_asg_install = false
 k8s_nodeport                  = true
 
 

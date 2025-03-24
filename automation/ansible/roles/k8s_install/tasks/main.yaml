@@ -117,6 +117,25 @@
     path: "{{home_dir.stdout_lines[0]}}/.kube"
     state: directory
 
+- name: nslookup infra lb ip
+  connection: local
+  shell: "nslookup {{infra_lb_domain}} | grep Address | tail -1 | tr ':' '\n' | tail -1 | sed 's/^ *//'"
+  register: lb_ip
+
+- name: insert variable
+  set_fact:
+    lb_ip: "{{lb_ip.stdout}}" 
+
+- name: input hosts
+  become: yes
+  lineinfile:
+    path: /etc/hosts
+    line: "{{lb_ip}} {{item}}"
+    create: yes
+  with_items:
+    - "gitlab.sol.lab"
+    - "registry.sol.lab"
+
 - name: input hosts - harbor, gitlab
   lineinfile:
     path: /etc/hosts

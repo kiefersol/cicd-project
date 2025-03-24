@@ -156,8 +156,40 @@
     - productpage
     - details
   register: installing
+
+- name: configure gitlab project create shell - kubernetes
+  connection: local
+  template:
+    src: ../templates/infra/gitlab/{{item}}-k8s.j2
+    dest: "../files/gitlab_project/bookinfo-k8s/{{item}}/init.sh"
+    mode: 0755
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+
+- name: push bookinfo sample1 - kubernetes
+  connection: local
+  shell: git config --global --add safe.directory ../files/gitlab_project/bookinfo-k8s/{{item}}
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+  register: installing
 - debug: var=installing
 
+- name: push bookinfo sample2 - kubernetes
+  connection: local
+  shell: cd ../files/gitlab_project/bookinfo-k8s/{{item}}/; ./init.sh
+  loop:
+    - reviews
+    - ratings
+    - productpage
+    - details
+  register: installing
+- debug: var=installing
 
 
 

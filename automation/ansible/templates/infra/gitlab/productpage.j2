@@ -4,7 +4,7 @@ DOMAIN_NAME={{gitlab_external_url}}
 echo ${DOMAIN_NAME}
 git config --global http.sslverify false
 git config --global user.name "Administrator"
-git config --global user.email "admin@bxk.com"
+git config --global user.email "admin@example.com"
 
 git init
 git remote add origin https://{{gitlab_root_username}}:{{gitlab_password}}@${DOMAIN_NAME}/bookinfo/productpage.git

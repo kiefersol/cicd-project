@@ -7,7 +7,7 @@ git config --global user.name "Administrator"
 git config --global user.email "admin@example.com"
 
 git init
-git remote add origin https://sol:solsol1234!@${DOMAIN_NAME}/bookinfo/details.git
+git remote add origin https://sol:solsol1234!@${DOMAIN_NAME}/bookinfo-k8s/reviews.git
 git add .
 git commit -m "Initial commit"
 git push -u origin master

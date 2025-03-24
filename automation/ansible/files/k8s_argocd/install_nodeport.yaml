@@ -17065,6 +17065,8 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
         - mountPath: /app/config/tls
@@ -17077,6 +17079,10 @@ spec:
           name: tmp
       serviceAccountName: argocd-applicationset-controller
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File  
       - configMap:
           name: argocd-ssh-known-hosts-cm
         name: ssh-known-hosts
@@ -17145,6 +17151,8 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /shared
           name: static-files
         - mountPath: /tmp
@@ -17170,12 +17178,18 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /shared
           name: static-files
         - mountPath: /tmp
           name: dexconfig
       serviceAccountName: argocd-dex-server
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File 
       - emptyDir: {}
         name: static-files
       - emptyDir: {}
@@ -17227,6 +17241,8 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /app/config/tls
           name: tls-certs
         - mountPath: /app/config/reposerver/tls
@@ -17238,6 +17254,10 @@ spec:
           type: RuntimeDefault
       serviceAccountName: argocd-notifications-controller
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File 
       - configMap:
           name: argocd-tls-certs-cm
         name: tls-certs
@@ -17501,6 +17521,8 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
         - mountPath: /app/config/tls
@@ -17535,10 +17557,16 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /var/run/argocd
           name: var-files
       serviceAccountName: argocd-repo-server
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File 
       - configMap:
           name: argocd-ssh-known-hosts-cm
         name: ssh-known-hosts
@@ -17827,6 +17855,8 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
         - mountPath: /app/config/tls
@@ -17841,6 +17871,10 @@ spec:
           name: tmp
       serviceAccountName: argocd-server
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File 
       - emptyDir: {}
         name: plugins-home
       - emptyDir: {}
@@ -18059,6 +18093,8 @@ spec:
           seccompProfile:
             type: RuntimeDefault
         volumeMounts:
+        - mountPath: /etc/hosts
+          name: hosts
         - mountPath: /app/config/controller/tls
           name: argocd-repo-server-tls
         - mountPath: /home/argocd
@@ -18066,6 +18102,10 @@ spec:
         workingDir: /home/argocd
       serviceAccountName: argocd-application-controller
       volumes:
+      - name: hosts
+        hostPath:
+          path: /etc/hosts  
+          type: File 
       - emptyDir: {}
         name: argocd-home
       - name: argocd-repo-server-tls
