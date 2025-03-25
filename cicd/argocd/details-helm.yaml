@@ -7,7 +7,7 @@ spec:
   project: bookinfo
   source:
     repoURL: 'https://gitlab.sol.lab:8443/bookinfo-k8s/details.git'
-    targetRevision: main
+    targetRevision: master
     path: helm/details
     helm:
       releaseName: details  # 고정
@@ -18,7 +18,15 @@ spec:
     namespace: bookinfo
   syncPolicy:
     automated:
-      prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
+    - group: ""
+      kind: Service
+      jsonPointers:
+        - /spec/type

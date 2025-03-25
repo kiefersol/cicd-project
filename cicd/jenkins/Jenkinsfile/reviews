@@ -10,6 +10,7 @@ pipeline {
         MATTERMOST_URL = "cicd-dev-infra-lb-7800375cae98720b.elb.ap-northeast-2.amazonaws.com:8085"
         MATTERMOST_TOKEN = "ct1imw5u13ddxpejmmyewufi3o"
         MAIL_TO ="hansol4412@naver.com"
+        K8S_DEPLOY = "kustomize"
     }
 
     tools {
@@ -114,6 +115,89 @@ pipeline {
             
             steps {
                 sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER}"
+            }
+        }
+
+        stage('Checkout K8s Git Source Code') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'git-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh '''
+                            JOB_NAME_PARTS=${JOB_NAME%/*}        
+                            JOB_SHORT_NAME=$(basename ${JOB_NAME})      
+                            echo ${JOB_NAME_PARTS}
+                            echo ${JOB_SHORT_NAME}
+        
+                            git config --global http.sslVerify false
+                            git clone https://${GIT_USER}:${GIT_PASS}@${GIT_REPO}/${JOB_NAME_PARTS}-k8s/${JOB_SHORT_NAME} ${JOB_SHORT_NAME}-k8s
+                            cd ${JOB_SHORT_NAME}-k8s
+                            git checkout ${GIT_BRANCH}
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Change Image Tags') {
+            steps {
+                script {
+                    sh '''
+                        NEW_TAG="v${BUILD_NUMBER}"
+                        JOB_SHORT_NAME=$(basename ${JOB_NAME})
+                        cd ${JOB_SHORT_NAME}-k8s
+        
+                        if [ "${K8S_DEPLOY}" = "helm" ]; then
+                            cd helm/${JOB_SHORT_NAME}
+                            echo "Moved to $(pwd) (Helm directory)"
+                            ls -al
+                            
+                            cat values.yaml
+                            sed -i "s/v[0-9]\\+/v${BUILD_NUMBER}/g" values.yaml
+                            cat values.yaml
+                            
+                        elif [ "${K8S_DEPLOY}" = "kustomize" ]; then
+                            cd kustomize
+                            echo "Moved to $(pwd) (Kustomize directory)"
+                            ls -al
+    
+                            cat kustomization.yaml
+                            sed -i "/apiVersion/!s/v[0-9]\\+/v${BUILD_NUMBER}/g" kustomization.yaml
+                            cat kustomization.yaml
+                            
+                            
+                        else
+                            echo "Error: Invalid K8S_DEPLOY value - ${K8S_DEPLOY}"
+                            exit 1
+                        fi
+                    '''
+                }
+            }
+        }
+        
+        stage('Push File to Gitlab') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'git-credentials', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                        sh '''
+                            JOB_NAME_PARTS=${JOB_NAME%/*}        
+                            JOB_SHORT_NAME=$(basename ${JOB_NAME}) 
+                            
+                            cd ${JOB_SHORT_NAME}-k8s
+                            ls -al
+                            git config --global http.sslverify false
+                            git config --global user.name "Administrator"
+                            git config --global user.email "admin@example.com"
+
+                            git status
+                            git add .
+                            git commit -m "update image tags to ${NEW_TAG} (automated by Jenkins)"
+                            git push https://${GIT_USER}:${GIT_PASS}@${GIT_REPO}/${JOB_NAME_PARTS}-k8s/${JOB_SHORT_NAME}.git ${GIT_BRANCH}
+                            
+                            rm -rf .git
+    
+                        '''
+                    }
+                }
             }
         }
     }
