@@ -405,7 +405,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
+      storage: 50Gi
   storageClassName: default
 ---
 # Source: prometheus/templates/server/deploy.yaml

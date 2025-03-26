@@ -18,8 +18,8 @@ nas_kubernetes_access_point = "/"
 
 # kubeadm 사용
 k8s_manual_install            = true
-k8s_ami_make                  = false
-k8s_manual_worker_asg_install = false
+k8s_ami_make                  = true
+k8s_manual_worker_asg_install = true
 k8s_nodeport                  = true
 
 
@@ -63,7 +63,7 @@ infra_root_block_device_size     = 50
 infra_ebs_root_block_device_size = 70
 
 # infra lb
-lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"mysql", "mattermost"]
+lb_infra_component_list                 = ["harbor", "gitlab", "nexus", "jenkins" ,"sonarqube", "mattermost"]
 lb_infra_listener_port                  = [5443, 8443, 8081, 8080, 9000, 8085]
 lb_infra_target_group_port              = [5443, 8443, 8081, 8080, 9000, 8085]
 lb_infra_target_group_health_check_port = [5443, 8443, 8081, 8080, 9000, 8085]

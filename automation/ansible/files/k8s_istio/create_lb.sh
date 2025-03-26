@@ -16,21 +16,3 @@ popd
 
 ### support http1.0 : --set values.pilot.env.PILOT_HTTP10=1 
 ### debugging : --set meshConfig.accessLogFile=/dev/stdout
-
-cat <<EOF | kubectl create -f -
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: sol-gateway
-  namespace: istio-system
-spec:
-  selector:
-    istio: ingressgateway
-  servers:
-  - hosts:
-    - '*'
-    port:
-      name: http
-      number: 80
-      protocol: HTTP
-EOF

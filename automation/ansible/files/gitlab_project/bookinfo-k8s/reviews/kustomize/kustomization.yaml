@@ -1,13 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namePrefix: v2-
+nameSuffix: -v0
 resources:
   - ./yaml/deployment.yaml
   - ./yaml/service.yaml
 
 images:
   - name: registry.sol.lab:5443/bookinfo/reviews
-    newTag: v2  
+    newTag: v0  
 
 patches:
   - target:
@@ -19,11 +19,10 @@ patches:
         value: 1  
       - op: add
         path: /spec/template/metadata/labels/version
-        value: v2
+        value: v0
       - op: add
         path: /spec/selector/matchLabels/version
-        value: v2
-      - op: add
-        path: /spec/template/metadata/annotations
-        value:
-          sidecar.istio.io/inject: "true"
+        value: v0
+      - op: replace
+        path: /metadata/name
+        value: details-v0

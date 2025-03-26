@@ -5,6 +5,7 @@ metadata:
   namespace: bookinfo
   labels:
     sol.io/owner: "{{ .Values.labels.solOwner }}"
+    version: "{{ .Values.image.tag }}"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -15,6 +16,10 @@ spec:
       labels:
         app: ratings
         sol.io/owner: "{{ .Values.labels.solOwner }}"
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        {{- end }}
+        version: "{{ .Values.image.tag }}"
     spec:
       containers:
         - name: ratings-{{ .Values.image.tag }}

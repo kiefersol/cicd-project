@@ -10,11 +10,16 @@ spec:
   selector:
     matchLabels:
       app: productpage
+      version: "{{ .Values.image.tag }}"
   template:
     metadata:
       labels:
         app: productpage
         sol.io/owner: "{{ .Values.labels.solOwner }}"
+        {{- if .Values.istio.enabled }}
+        sidecar.istio.io/inject: "true"
+        {{- end }}
+        version: "{{ .Values.image.tag }}"
     spec:
       containers:
         - name: productpage-{{ .Values.image.tag }}

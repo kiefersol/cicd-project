@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: registry.sol.lab:5443/bookinfo/ratings
-  tag: v1
+  tag: v0
   pullPolicy: IfNotPresent
 
 service:
@@ -19,3 +19,6 @@ resources:
 
 labels:
   solOwner: "hansol"
+
+istio:
+  enabled: true
