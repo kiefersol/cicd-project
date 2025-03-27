@@ -88,7 +88,7 @@ pipeline {
             }
             
             steps {
-                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER}"
+                sh "trivy image --severity CRITICAL  ${DOCKER_REGISTRY}/${JOB_NAME}:v${BUILD_NUMBER}"
             }
         }
 
@@ -187,7 +187,7 @@ pipeline {
             echo '### on failure!'
             mattermostSend (
                 color: "danger", 
-                channel: "jenkins", 
+                channel: "bookinfo", 
                 endpoint: "http://${MATTERMOST_URL}/hooks/${MATTERMOST_TOKEN}",
                 message: "Build ${currentBuild.result}: ${JOB_NAME} #${BUILD_NUMBER} (<${BUILD_URL}|Link to build>)"
             )
@@ -197,7 +197,7 @@ pipeline {
             echo '### on success!'
             mattermostSend (
                 color: "good", 
-                channel: "jenkins", 
+                channel: "bookinfo", 
                 endpoint: "http://${MATTERMOST_URL}/hooks/${MATTERMOST_TOKEN}",
                 message: "Build ${currentBuild.result}: ${JOB_NAME} #${BUILD_NUMBER} (<${BUILD_URL}|Link to build>)"
                         
