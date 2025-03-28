@@ -1,0 +1,35 @@
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: canary-reviews   # 단지 virtual service의 이름 k8s service와 관련x
+  namespace: bookinfo
+spec:
+  hosts:
+    - reviews     # 라우팅 규칙을 적용할 k8s service DNS이름
+  http:
+    - route:
+        - destination:
+            host: reviews # Target이 되는 k8s service DNS이름
+            subset: black                 
+          weight: 10
+        - destination:
+            host: reviews # Target이 되는 라우팅 규칙을 적용할 k8s service DNS이름
+            subset: red                
+          weight: 90
+
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: canary-reviews
+  namespace: bookinfo
+spec:
+  host: reviews
+  subsets: # subset 정의
+    - labels:               
+        version: v1        
+      name: black             
+    - labels:                
+        version: v2       
+      name: red           

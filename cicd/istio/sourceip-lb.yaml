@@ -1,0 +1,31 @@
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: sticky-session-lb-reviews
+  namespace: bookinfo
+spec:
+  hosts:
+    - reviews   
+  http:
+    - route:
+        - destination:
+            host: reviews
+            subset: reviews-pods              
+
+---
+kind: DestinationRule  
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: sticky-session-lb-reviews 
+  namespace: bookinfo
+spec:
+  host: reviews
+  trafficPolicy:
+    loadBalancer:
+      consistentHash:
+        useSourceIp: true       # 클라이언트 ip 사용
+  subsets:
+    - labels:  
+        app: reviews # reviews 파드가 공통적으로 가지고 있는 lables
+      name: reviews-pods

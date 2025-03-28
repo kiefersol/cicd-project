@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: circuit-breaker-details
+  namespace : bookinfo
+spec:
+  host: details          
+  trafficPolicy:
+    outlierDetection: # Circuit Breakers HAVE TO BE SWITCHED ON
+      maxEjectionPercent: 100 # 서킷 브레이커가 작동하기 시작하는 경우 최대한으로 부하 분산의 100%를 제거
+      consecutive5xxErrors: 2 # 서킷 브레이커가 트리거 되기 전에 얼마나 많은 연속 오류가 발생하기를 원하는지 설정
+      interval: 3s # consecutiveErrors 시도 횟수 간의 간격
+      baseEjectionTime: 10s # 포드가 부하분산에서 얼마나 오랫동안 제거되는지 설정
