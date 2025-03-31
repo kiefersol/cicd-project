@@ -109,9 +109,9 @@ spec:
             - name: "GF_AUTH_BASIC_ENABLED"
               value: "false"
             - name: "GF_SECURITY_ADMIN_PASSWORD"
-              value: "bxcp!gen3"
+              value: "solsol1234!"
             - name: "GF_SECURITY_ADMIN_USER"
-              value: "bxcp"
+              value: "sol"
           livenessProbe:
             failureThreshold: 10
             httpGet:
