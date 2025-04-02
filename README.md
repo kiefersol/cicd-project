@@ -80,6 +80,7 @@ graph TD;
 - [도서] 도커/쿠버네티스를 활용한 컨테이너 개발 실전 입문
 - [Terraform 공식 문서](https://developer.hashicorp.com/terraform/docs)
 - [Ansible 공식 문서](https://docs.ansible.com/)
+- bookinfo source code (https://github.com/istio/istio/tree/master/samples/bookinfo)
 
 ## 👨‍💻 프로젝트 담당자
 - **작성자:** [Hansol Choi]
