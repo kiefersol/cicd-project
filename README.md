@@ -79,6 +79,6 @@ graph TD;
 - [Grafana 공식 문서](https://grafana.com/docs/)
 
 ## 👨‍💻 프로젝트 담당자
-- **작성자:** [Your Name]
-- **GitHub:** [Your GitHub Profile]
-- **Email:** your.email@example.com
+- **작성자:** [Hansol Choi]
+- **GitHub:** [https://github.com/kiefersol/)]
+- **Email:** [kiefer.sol96@gmail.com]
