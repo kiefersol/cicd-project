@@ -15,7 +15,7 @@
 |------|-----------|
 | **인프라 자동화** | Terraform, Ansible |
 | **CI/CD** | Jenkins, GitLab, Harbor, ArgoCD |
-| **Kubernetes** | Amazon EKS / Auto Scaling Group 기반 클러스터 |
+| **Kubernetes** | Kubeadm / Auto Scaling Group 기반 클러스터 |
 | **서비스 메쉬** | Istio, Kiali, Jaeger |
 | **모니터링** | Prometheus, Grafana |
 
@@ -69,16 +69,19 @@ graph TD;
 - **Prometheus Alertmanager 연동하여 실시간 알람 시스템 추가**
 - **Argo Rollouts를 활용한 Progressive Delivery 적용**
 - **RBAC 및 보안 강화를 위한 Vault, OPA(Open Policy Agent) 도입 검토**
+- **Kubernetes yaml 파일로 단순 배포하는 컴포넌트들을 argoCD를 이용한 배포 이용방식으로 전환 검토**
 
 ## 📖 참고 자료
+- [udemy 강의] Istio Hands-On for Kubernetes
+- [udemy 강의] Argo CD Essential Guide for End Users with Practice
+- [도서] Kubernetes in Action
+- [도서] GitOps Cookbook : 커스터마이즈, 헬름, 텍톤, Argo CD를 활용한 쿠버네티스 CI/CD 구축하기
+- [도서] 젠킨스로 배우는 CI/CD 파이프라인 구축 : 보안, 파이프라인, 테스트, AWS/Docker 통합
+- [도서] 도커/쿠버네티스를 활용한 컨테이너 개발 실전 입문
 - [Terraform 공식 문서](https://developer.hashicorp.com/terraform/docs)
 - [Ansible 공식 문서](https://docs.ansible.com/)
-- [ArgoCD 공식 문서](https://argo-cd.readthedocs.io/en/stable/)
-- [Istio 공식 문서](https://istio.io/latest/docs/)
-- [Prometheus 공식 문서](https://prometheus.io/docs/)
-- [Grafana 공식 문서](https://grafana.com/docs/)
 
 ## 👨‍💻 프로젝트 담당자
 - **작성자:** [Hansol Choi]
-- **GitHub:** [https://github.com/kiefersol/)]
+- **GitHub:** [https://github.com/kiefersol]
 - **Email:** [kiefer.sol96@gmail.com]
