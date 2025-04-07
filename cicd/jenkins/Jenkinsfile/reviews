@@ -43,24 +43,7 @@ pipeline {
                 }
             }
         }
-               
-        stage('Source Code Scanning with SonarQube') {
-            steps {
-                
-                withSonarQubeEnv('sonarQube'){
-                    sh '''
-                    JOB_SHORT_NAME=$(basename ${JOB_NAME})
-                    cd ${JOB_SHORT_NAME}
-                    /opt/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
-                    -Dsonar.projectKey=${JOB_SHORT_NAME} \
-                    -Dsonar.sources=. \
-                    -Dsonar.java.binaries=./reviews-application/build/classes \
-                    -Dsonar.host.url=http://${SONARQUBE_URL} \
-                    -Dsonar.login=${SONARQUBE_TOKEN}
-                    '''
-                }
-            }
-        }
+
         
         stage('Build Gradle') {
             steps {
@@ -79,7 +62,24 @@ pipeline {
                 '''
             }
         }
-
+               
+        stage('Source Code Scanning with SonarQube') {
+            steps {
+                
+                withSonarQubeEnv('sonarQube'){
+                    sh '''
+                    JOB_SHORT_NAME=$(basename ${JOB_NAME})
+                    cd ${JOB_SHORT_NAME}
+                    /opt/sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner \
+                    -Dsonar.projectKey=${JOB_SHORT_NAME} \
+                    -Dsonar.sources=. \
+                    -Dsonar.java.binaries=./reviews-application/build/classes \
+                    -Dsonar.host.url=http://${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
+                }
+            }
+        }
         
 
         stage('Build Docker Image') {
