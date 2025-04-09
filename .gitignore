@@ -4,6 +4,8 @@ automation/terraform/aws/.terraform.lock.hcl
 automation/terraform/aws/restart/.terraform/*
 automation/terraform/aws/restart/.terraform.lock.hcl
 automation/ansible/files/ssl_cert/*
+automation/terraform/aws/terraform.tfstate.backup
+automation/terraform/aws/terraform.tfstate
 automation/ansible/files/harbor/install/*.tar.gz
 automation/ansible/files/k8s_cert/*
 automation/ansible/files/cloud_tool/*
