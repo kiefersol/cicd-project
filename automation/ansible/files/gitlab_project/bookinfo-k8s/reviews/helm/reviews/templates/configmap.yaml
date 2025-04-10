@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: reviews-config
+  labels:
+    app: reviews
+data:
+  ENABLE_RATINGS: {{ .Values.reviewsConfig.ENABLE_RATINGS | quote }}
+  STAR_COLOR: {{ .Values.reviewsConfig.STAR_COLOR | quote }}

@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-nameSuffix: -v0
 resources:
   - ./yaml/deployment.yaml
   - ./yaml/service.yaml
@@ -8,6 +7,17 @@ resources:
 images:
   - name: registry.sol.lab:5443/bookinfo/ratings
     newTag: v0  
+        
+# v1 - DB 없이 동작
+# v2 - DB 연동
+# v-faulty - 절반 확률로 503 Service Unavailable 에러 발생
+# v-delayed - 절반 확률로 7초 응답 지연
+# v-unavailable - 60초마다 가용/비가용 상태 전환
+# v-unhealthy - 15분마다 건강/비건강 상태 전환
+configMapGenerator:
+  - name: ratings-config
+    literals:
+      - SERVICE_VERSION=v1
 
 patches:
   - target:
@@ -25,4 +35,4 @@ patches:
         value: v0
       - op: replace
         path: /metadata/name
-        value: details-v0
+        value: ratings-v0

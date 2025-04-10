@@ -22,3 +22,14 @@ labels:
 
 istio:
   enabled: true
+
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+detailsConfig:
+  ENABLE_EXTERNAL_BOOK_SERVICE: "false"

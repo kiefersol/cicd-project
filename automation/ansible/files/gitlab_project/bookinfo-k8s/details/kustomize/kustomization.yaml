@@ -8,6 +8,12 @@ images:
   - name: registry.sol.lab:5443/bookinfo/details
     newTag: v0  
 
+# 책 정보 외부 Google Books API를 통해 실제 책 정보를 가져오게 함
+configMapGenerator:
+  - name: details-config
+    literals:
+      - ENABLE_EXTERNAL_BOOK_SERVICE=false
+
 patches:
   - target:
       kind: Deployment

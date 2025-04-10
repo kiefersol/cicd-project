@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-nameSuffix: -v0
 resources:
   - ./yaml/deployment.yaml
   - ./yaml/service.yaml
@@ -8,6 +7,14 @@ resources:
 images:
   - name: registry.sol.lab:5443/bookinfo/reviews
     newTag: v0  
+
+# ratings와 연결하여 별 가져오는 것
+# 별 색상 선정
+configMapGenerator:
+  - name: reviews-config
+    literals:
+      - ENABLE_RATINGS=true
+      - STAR_COLOR=black
 
 patches:
   - target:
@@ -25,4 +32,4 @@ patches:
         value: v0
       - op: replace
         path: /metadata/name
-        value: details-v0
+        value: reviews-v0
