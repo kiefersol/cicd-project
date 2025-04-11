@@ -21,14 +21,14 @@ resource "aws_launch_template" "sol_asg_launch_template" {
       delete_on_termination = true
     }
   }
-  block_device_mappings {
-    device_name = "/dev/sdf"
-    ebs {
-      volume_size           = var.asg_ebs_volume_size
-      volume_type           = "gp2"
-      delete_on_termination = true
-    }
-  }
+  # block_device_mappings {
+  #   device_name = "/dev/sdf"
+  #   ebs {
+  #     volume_size           = var.asg_ebs_volume_size
+  #     volume_type           = "gp2"
+  #     delete_on_termination = true
+  #   }
+  # }
   depends_on = [
     var.master_node_ip,
     var.k8s_lb

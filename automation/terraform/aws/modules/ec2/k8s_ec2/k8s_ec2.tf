@@ -13,12 +13,12 @@ resource "aws_instance" "sol_ec2" {
   root_block_device {
     volume_size = var.root_block_device_size
   }
-  ebs_block_device {
-    delete_on_termination = true
-    device_name           = "/dev/sdf"
-    volume_size           = var.ebs_block_device_size
-    volume_type           = "gp2"
-  }
+  # ebs_block_device {
+  #   delete_on_termination = true
+  #   device_name           = "/dev/sdf"
+  #   volume_size           = var.ebs_block_device_size
+  #   volume_type           = "gp2"
+  # }
   tags = tomap({
     "Name"                                                     = var.ec2_name,
     "kubernetes.io/cluster/${var.vpc_name}/${var.system_type}" = "owned",

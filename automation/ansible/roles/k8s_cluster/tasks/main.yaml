@@ -74,6 +74,9 @@
   environment:
     PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
     KUBECONFIG: "{{kube_config}}"  
+  when: '"{{cloud_provider}}" == "{{item}}"'
+  with_items:
+    - eks
 
 - name: Add label to master node for cluster autoscaler
   shell: kubectl label nodes {{master_name.stdout_lines[0]}} kubernetes.io/role=master
@@ -93,6 +96,22 @@
   when: '"{{cloud_provider}}" == "{{item}}"'
   with_items:
     - eks
+
+- name: Get all Kubernetes nodes
+  shell: "kubectl get nodes -o wide | grep -v control-plane | grep -v master | awk '{print $1}'"
+  register: worker_nodes
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+- debug: var=worker_nodes
+
+- name: Remove taint from worker nodes
+  shell: "kubectl taint nodes {{ item }} node.cloudprovider.kubernetes.io/uninitialized-"
+  with_items: "{{ worker_nodes.stdout_lines[1]}}"
+  environment:
+    PATH : /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/bin
+    KUBECONFIG: "{{kube_config}}" 
+  ignore_errors: yes
 
 # metric server
 - name: install metric server
