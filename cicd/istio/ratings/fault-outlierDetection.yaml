@@ -1,0 +1,21 @@
+# circuit breaker
+# ratings 서비스의 v1 인스턴스 중 하나가 2번 연속으로 5xx 응답을 하면
+# Istio가 그 인스턴스를 문제 있는 Pod으로 판단함
+# 해당 인스턴스를 30초간 부하 분산 대상에서 제외하고 다른 인스턴스들로만 트래픽 분산
+# 30초 후에 다시 체크해서 복구되었으면 다시 부하분산 대상에 포함
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: ratings
+spec:
+  host: ratings
+  subsets:
+  - name: failed
+    labels:
+      version: v2
+  trafficPolicy:
+    outlierDetection:
+      consecutive5xxErrors: 2 # 서킷 브레이커가 트리거 되기 전에 얼마나 많은 연속 오류가 발생하기를 원하는지 설정
+      interval: 10s # consecutiveErrors 시도 횟수 간의 간격
+      baseEjectionTime: 30s # 포드가 부하분산에서 얼마나 오랫동안 제거되는지 설정

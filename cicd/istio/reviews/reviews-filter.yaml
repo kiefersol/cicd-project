@@ -1,0 +1,56 @@
+# productpage가 review에게 다수의 요청을 보냄 
+# reviews에서 필터링 거쳐서 1초에 1개의 요청만 허용, 초과 시 429 응답
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: reviews-rate-limit
+  namespace: bookinfo
+spec:
+  workloadSelector:
+    labels:
+      app: reviews
+# 이 필터는 Inbound 요청에 적용
+# 9080 포트에 들어오는 HTTP 요청을 대상
+  configPatches: 
+    - applyTo: HTTP_FILTER
+      match:
+        context: SIDECAR_INBOUND
+        listener:
+          portNumber: 9080
+          filterChain:
+            filter:
+              name: "envoy.filters.network.http_connection_manager"
+# INSERT_BEFORE는 기존 필터 체인에서 특정 필터 이전 위치에 삽입한다는 의미
+# envoy.filters.http.local_ratelimit → Envoy의 로컬 Rate Limit 필터를 사용
+      patch:
+        operation: INSERT_BEFORE
+        value:
+          name: envoy.filters.http.local_ratelimit
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.filters.http.local_ratelimit.v3.LocalRateLimit
+            
+# 토큰 버킷 알고리즘 사용
+# 초당 1개의 토큰만 생성되며, 1개 요청만 통과 가능 초과 요청은 거부됨 (429 응답)
+            stat_prefix: http_local_rate_limiter
+            token_bucket:
+              max_tokens: 1  # 버킷에 저장할 수 있는 최대 토큰 수 (1개)
+              tokens_per_fill: 1 # 주기마다 생성되는 토큰 수 (1초에 1개)
+              fill_interval: 1s  # 토큰을 채우는 간격 (1초)
+             
+# 이 Rate Limit은 기본적으로 100% 확률로 활성화됨
+            filter_enabled:
+              runtime_key: local_rate_limit_enabled
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+            filter_enforced:
+              runtime_key: local_rate_limit_enforced
+              default_value:
+                numerator: 100
+                denominator: HUNDRED
+# rate Limiting이 작동하면 응답에 x-rate-limit: limited 헤더가 붙음
+            response_headers_to_add:
+              - append: false
+                header:
+                  key: x-rate-limit
+                  value: 'limited'

@@ -1,0 +1,32 @@
+# 50% 확률로 7초 지연 후 정상 응답
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: ratings-delayed
+spec:
+  hosts:
+  - ratings
+  http:
+  - route:
+    - destination:
+        host: ratings
+        subset: success
+    fault:
+      delay:
+        fixedDelay: 7s
+        percentage:
+          value: 50.0
+
+---
+kind: DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: ratings-faulty
+  namespace: bookinfo
+spec:
+  host: ratings
+  subsets: # subset 정의
+    - labels:               
+        version: v1        
+      name: success 

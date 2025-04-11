@@ -56,7 +56,6 @@ pipeline {
                     java -version
                     gradle -v
                     cd ${JOB_SHORT_NAME}
-                    rm -rf ./.gradle
                 
                     gradle clean build -g ./
                 '''
