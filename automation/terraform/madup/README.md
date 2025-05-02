@@ -21,6 +21,8 @@
 
 ## 사용 방법
 **terraform plan --var-file="./madup.tfvars"**
+
+
 **terraform apply --var-file="./madup.tfvars"**
 
 - Terraform 변수 파일을 사용해서 환경마다 달라질 수 있는 값(예: VPC 이름, 인스턴스 타입, 노드 수 등)을 분리해 관리 할 수 있게 했다.
