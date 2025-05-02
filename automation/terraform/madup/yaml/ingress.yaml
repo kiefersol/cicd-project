@@ -1,0 +1,21 @@
+# nginx ingress controller를 사용할 때 배포하는 ingress.yaml
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: nginx-ingress
+#   namespace: nginx
+#   annotations:
+#     nginx.ingress.kubernetes.io/whitelist-source-range: "123.123.123.123/32"
+# spec:
+#   ingressClassName: nginx
+#   rules:
+#     - host: nginx.example.com
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: nginx-service
+#                 port:
+#                   number: 80
