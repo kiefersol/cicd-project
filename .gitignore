@@ -20,3 +20,7 @@ automation/ansible/roles/admin
 automation/ansible/files/k8s_argocd/argocd_token
 automation/ansible/files/k8s_argocd/*.json
 automation/ansible/files/gitlab_project/shellscript/generated/tokens/*
+automation/terraform/madup/.terraform/*
+automation/terraform/madup/.terraform.lock.hcl
+automation/terraform/madup/terraform.tfstate.backup
+automation/terraform/madup/terraform.tfstate
